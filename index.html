@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Story Card - Pixel Fantasy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入像素藝術字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="game-header">
+        <h1>Lord of the Roaches</h1>
+        <p id="chapter-name">第一章・開始</p>
+    </header>
+
+    <!-- 劇情卡片容器：確保外層 overflow 可見，不遮擋卡片滑動 -->
+    <main id="game-viewport"></main>
+
+    <!-- 結局畫面 -->
+    <div id="game-over" hidden>
+    <div class="achievement-badge">🏆</div>
+    <div class="achievement-tag">ACHIEVEMENT UNLOCKED</div>
+    <h2 id="over-title">【結局1：封閉的房間】</h2>
+    <p id="over-msg">你解鎖了成就：孤獨的死因。</p>
+    <button onclick="restartGame()">↻ 重新開始冒險</button>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -40,7 +40,7 @@ const STORY_DATA = {
         chapter: "第一章・偷聽情報",
         title: "牆角裡的碎碎唸",
         description: "你屏住呼吸，將觸角貼近陰影深處……\n\n蟑螂A：「欸，你們有沒有發現最近這屋子的主人都不打掃了？」\n蟑螂B：「對啊！地上全是餅乾屑和油垢，簡直是天堂！」\n蟑螂C：「嘿嘿，這主人大概是放棄人生了吧？便宜我們了～」",
-        image: "images/eavesdrop.png",
+        image: "images/3.png",
         onEnter: () => {
             secretEndingCondition1 = true;
             console.log("秘密結局條件 1 已解鎖！");

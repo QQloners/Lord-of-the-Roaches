@@ -2,6 +2,28 @@
 let secretEndingCondition1 = false;
 
 /* =================================
+   0. 背景飄浮微塵粒子初始化
+================================= */
+function initAmbientDust() {
+    const dustLayer = document.getElementById("dust-layer");
+    if (!dustLayer) return;
+
+    dustLayer.innerHTML = "";
+    const moteCount = 18;
+
+    for (let i = 0; i < moteCount; i++) {
+        const mote = document.createElement("span");
+        mote.className = "dust-mote";
+        mote.style.left = `${Math.random() * 100}%`;
+        mote.style.top = `${25 + Math.random() * 75}%`;
+        mote.style.setProperty("--drift-x", `${(Math.random() * 44 - 22).toFixed(1)}px`);
+        mote.style.animationDuration = `${(9 + Math.random() * 10).toFixed(1)}s`;
+        mote.style.animationDelay = `${(-Math.random() * 14).toFixed(1)}s`;
+        dustLayer.appendChild(mote);
+    }
+}
+
+/* =================================
    1. 劇情資料庫 STORY_DATA
 ================================= */
 const STORY_DATA = {
@@ -9,7 +31,7 @@ const STORY_DATA = {
     start: {
         chapter: "第一章・異變",
         title: "白色軀體",
-        description: "某天早晨，你從一場不安的夢中醒來...\n此時，門外傳來一道聲音：「要吃飯了...」",
+        description: "某天早晨，你從一場不安的夢中醒來...\n這是怎麼回事!?我怎麼會變這樣!?\n你驚恐的吶喊...\n然而...\n此時的你...\n什麼都想不起來...\n也不知道...\n只確定自己曾經人類...\n此時，門外傳來一道聲音...\n「喔依~大家快來吃東西!」",
         image: "images/1.png",
         left: { label: "🚪 鎖門不出", next: "ending_1" },
         right: { label: "🚪 打開房門", next: "dining_room" }
@@ -67,261 +89,212 @@ const STORY_DATA = {
         ending: true
     },
 
-    
-talk_to_bugs: {
-    chapter: "第一章・騎士的宿命",
+    // 4. 初次接觸、五個話題、獨角仙情報與最後決策
+    talk_to_bugs: {
+        chapter: "第一章・騎士的宿命",
 
-    dialogueFlow: {
+        dialogueFlow: {
+            intro: [
+                { speaker: "主角", image: "images/4.png", text: "那個……不好意思。" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "嗯？怎麼了？" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "等一下……你是誰啊？" },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "好大隻……" },
+                { speaker: "主角", image: "images/4.png", text: "啊……抱歉，嚇到你們了嗎？" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "倒也不是，只是很少看到這麼大的蟑螂。" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "而且你的顏色也不太一樣，怎麼會是白色的？" },
+                { speaker: "主角", image: "images/4.png", text: "這個嘛……其實我也不太清楚。" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "你也不知道？" },
+                { speaker: "主角", image: "images/4.png", text: "嗯……所以我才想問問你們，有沒有看過跟我一樣的情況。" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "這樣啊。那你想知道什麼？" }
+            ],
 
-        // ==========================================
-        // 第一階段：主角主動上前搭話
-        // ==========================================
-        intro: [
-            { speaker: "主角", image: "images/4.png", text: "那個……不好意思。" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "嗯？怎麼了？" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "等一下……你是誰啊？" },
-            { speaker: "蟑螂 C", image: "images/7.png", text: "好大隻……" },
-            { speaker: "主角", image: "images/4.png", text: "啊……抱歉，嚇到你們了嗎？" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "倒也不是，只是很少看到這麼大的蟑螂。" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "而且你的顏色也不太一樣，怎麼會是白色的？" },
-            { speaker: "主角", image: "images/4.png", text: "這個嘛……其實我也不太清楚。" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "你也不知道？" },
-            { speaker: "主角", image: "images/4.png", text: "嗯……所以我才想問問你們，有沒有看過跟我一樣的情況。" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "這樣啊。那你想知道什麼？" }
-        ],
+            topics: [
+                {
+                    title: "關於主角的變身",
+                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    left: {
+                        label: "詢問變身原因",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "你們知道我為什麼會變成這樣嗎？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "這個嘛……我們也不清楚，從來沒遇過這種事。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "突然變成蟑螂，還變得這麼大，確實很奇怪。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "你還記得自己是什麼時候變成這樣的嗎？" },
+                            { speaker: "主角", image: "images/4.png", text: "我只記得早上醒來的時候，就已經變成這個樣子了。" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "這樣啊……那我們也幫不上什麼忙。" }
+                        ]
+                    },
+                    right: {
+                        label: "詢問巨大蟑螂",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "你們有看過跟我一樣巨大的蟑螂嗎？" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "沒有喔！至少我從來沒看過。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "一般蟑螂可沒有你這麼大的身體。" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "而且你的身體還是白色的，看起來也很不一樣。" },
+                            { speaker: "主角", image: "images/4.png", text: "看來我跟一般蟑螂真的不太一樣……" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "是啊！所以我們才會對你這麼好奇嘛！" }
+                        ]
+                    }
+                },
+                {
+                    title: "關於變回人類",
+                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    left: {
+                        label: "詢問變回人類",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "有沒有什麼辦法能讓我變回人類？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "變回人類？原來你原本是人類啊。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "抱歉，我們從來沒遇過這種事情，也不知道該怎麼做。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "如果想找出答案，可能得問問比我們更了解昆蟲世界的傢伙。" },
+                            { speaker: "主角", image: "images/4.png", text: "看來只能再想辦法找線索了……" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "別太著急，也許真的有人知道答案呢。" }
+                        ]
+                    },
+                    right: {
+                        label: "詢問如何生活",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "如果一直維持這個樣子，我該怎麼辦？" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛……首先，你得慢慢習慣現在的身體吧？" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "而且你現在的體型，跟一般蟑螂差太多了。" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "如果想在昆蟲世界生活，可能還有很多事情需要學習。" },
+                            { speaker: "主角", image: "images/4.png", text: "……聽起來好麻煩，我還是希望能變回人類。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "哈哈，慢慢來嘛！不用一下子就適應。" }
+                        ]
+                    }
+                },
+                {
+                    title: "關於這間房子",
+                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    left: {
+                        label: "詢問房屋近況",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "你們最近常在這間房子活動嗎？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "是啊！最近這裡真的很適合生活。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "以前可沒這麼容易找到食物呢！" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "最近連一些角落都能找到不少東西。" },
+                            { speaker: "主角", image: "images/4.png", text: "所以這裡最近都沒有什麼人在打掃嗎？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "至少最近很少看到有人整理環境。" },
+                            { speaker: "主角", image: "images/4.png", text: "……這樣啊，難怪我覺得這裡有點熟悉。" }
+                        ]
+                    },
+                    right: {
+                        label: "詢問原本住戶",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "你們知道這間房子原本住著哪些人嗎？" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛，我們平常只在這裡活動。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "不太清楚房子裡原本住著哪些人。" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "我們平常比較在意哪裡有食物，倒是沒特別注意房子的主人。" },
+                            { speaker: "主角", image: "images/4.png", text: "……原來如此。我對這裡有種熟悉感，卻想不起來自己為什麼會有這種感覺。" }
+                        ]
+                    }
+                },
+                {
+                    title: "關於昆蟲騎士交流戰",
+                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    left: {
+                        label: "詢問昆蟲世界的活動",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "昆蟲世界裡，有什麼比較重要的活動嗎？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "有啊！最重要的活動之一就是昆蟲騎士交流戰。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "每一屆都會有不同種類的昆蟲派出代表參加。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "像我們蟑螂，也會有自己的代表呢！" },
+                            { speaker: "主角", image: "images/4.png", text: "原來如此……那是什麼樣的活動？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "詳細情況我們也不太清楚，畢竟騎士會議的內容不是一般平民能知道的。" }
+                        ]
+                    },
+                    right: {
+                        label: "詢問自己的特殊身分",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "像我這樣突然變得這麼巨大的蟑螂，會不會有什麼特殊身分？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "說到特殊身分……每一屆昆蟲騎士交流戰，都會由不同種類的昆蟲派出代表。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "我們蟑螂當然也有自己的代表。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "你的體型和外觀都很特殊，說不定跟這件事有關。" },
+                            { speaker: "主角", image: "images/4.png", text: "所以……你們覺得我可能是蟑螂的代表？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "只是猜測而已，真正的事情還是得找了解騎士大會的人問問看。" }
+                        ]
+                    }
+                },
+                {
+                    title: "尋找能夠幫助主角的人",
+                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    left: {
+                        label: "詢問誰能幫助自己",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "如果我想找人了解自己的情況，該找誰？" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛……另一間房間裡倒是有個傢伙。" },
+                            { speaker: "主角", image: "images/4.png", text: "那是誰？" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "牠知道不少昆蟲世界的事情。" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "或許牠能提供一些我們不知道的資訊。" }
+                        ]
+                    },
+                    right: {
+                        label: "詢問尋找線索的方法",
+                        steps: [
+                            { speaker: "主角", image: "images/4.png", text: "如果我想弄清楚自己為什麼變成這樣，應該從哪裡找線索？" },
+                            { speaker: "蟑螂 A", image: "images/6.png", text: "我們也不知道你的身上究竟發生了什麼事。" },
+                            { speaker: "蟑螂 B", image: "images/5.png", text: "不過，另一間房間裡有個傢伙，或許能幫上忙。" },
+                            { speaker: "蟑螂 C", image: "images/7.png", text: "牠對昆蟲世界的事情知道得比我們多。" },
+                            { speaker: "主角", image: "images/4.png", text: "另一間房間嗎……" }
+                        ]
+                    }
+                }
+            ],
 
+            finalSteps: [
+                { speaker: "蟑螂 A", image: "images/6.png", text: "對了，我們想到一個可能知道答案的傢伙。" },
+                { speaker: "主角", image: "images/4.png", text: "誰？" },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "住在書房裡的一隻獨角仙。" },
+                { speaker: "主角", image: "images/4.png", text: "獨角仙？" },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "沒錯！牠對昆蟲騎士交流戰的事情非常了解，應該能回答你不少問題。" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "不過……牠的個性有點奇怪。" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "有時候就像個小孩子一樣，精力旺盛，對什麼事情都很有興趣。" },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "所以平常很少有昆蟲會主動找牠聊天。" },
+                { speaker: "主角", image: "images/4.png", text: "原來如此……" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "如果你想弄清楚自己的狀況，或許可以去書房找牠問問。" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "等一下，我倒是覺得沒必要特地去找牠吧？" },
+                { speaker: "主角", image: "images/4.png", text: "為什麼？" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "難得遇到新朋友，不如留下來跟我們三個一起玩啊！" },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "對啊！我們可以陪你聊天，也可以一起找食物。這間房子裡的食物夠我們吃上一陣子了。" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "而且那隻獨角仙整天都在講騎士大會，搞不好會很無聊呢。" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "怎麼樣？要不要留下來？" }
+            ],
 
-        // ==========================================
-        // 第二階段：五個話題
-        // 玩家可以自行選擇左右對話
-        // 每個話題都不依賴其他話題的選擇結果
-        // ==========================================
-        topics: [
-
-            // --------------------------------------
-            // 話題一：關於主角的變身
-            // --------------------------------------
-            {
-                title: "關於主角的變身",
-                prompt: "你想向三隻蟑螂詢問哪件事？",
-
+            finalDecision: {
+                title: "最後的決定",
+                description: "眼前的三隻蟑螂似乎很歡迎主角加入牠們。另一方面，書房裡的獨角仙或許知道更多關於昆蟲騎士交流戰的情報，也可能幫助主角找到變回人類的線索。\n\n主角必須決定接下來的行動。",
                 left: {
-                    label: "詢問變身原因",
+                    label: "🚪 前往書房",
+                    next: "find_beetle",
                     steps: [
-                        { speaker: "主角", image: "images/4.png", text: "你們知道我為什麼會變成這樣嗎？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "這個嘛……我們也不清楚，從來沒遇過這種事。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "突然變成蟑螂，還變得這麼大，確實很奇怪。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "你還記得自己是什麼時候變成這樣的嗎？" },
-                        { speaker: "主角", image: "images/4.png", text: "我只記得早上醒來的時候，就已經變成這個樣子了。" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "這樣啊……那我們也幫不上什麼忙。" }
+                        { speaker: "主角", image: "images/4.png", text: "謝謝你們，不過我還是想去問問那隻獨角仙。" },
+                        { speaker: "蟑螂 B", image: "images/5.png", text: "這樣啊……那好吧！" },
+                        { speaker: "蟑螂 C", image: "images/7.png", text: "祝你順利喔！" },
+                        { speaker: "蟑螂 A", image: "images/6.png", text: "如果有機會，下次再一起聊天吧！" },
+                        { speaker: "旁白", text: "主角向三隻蟑螂道別，朝書房的方向前進。" }
                     ]
                 },
-
                 right: {
-                    label: "詢問巨大蟑螂",
+                    label: "留下來與三隻蟑螂一起玩",
+                    next: "ending_3",
                     steps: [
-                        { speaker: "主角", image: "images/4.png", text: "你們有看過跟我一樣巨大的蟑螂嗎？" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "沒有喔！至少我從來沒看過。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "一般蟑螂可沒有你這麼大的身體。" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "而且你的身體還是白色的，看起來也很不一樣。" },
-                        { speaker: "主角", image: "images/4.png", text: "看來我跟一般蟑螂真的不太一樣……" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "是啊！所以我們才會對你這麼好奇嘛！" }
+                        { speaker: "主角", image: "images/4.png", text: "嗯……好吧，難得有人願意陪我聊天。" },
+                        { speaker: "蟑螂 B", image: "images/5.png", text: "太好了！那就一起玩吧！" },
+                        { speaker: "蟑螂 C", image: "images/7.png", text: "哈哈哈！今天又有新朋友了！" },
+                        { speaker: "旁白", text: "主角決定留在餐桌底下，與三隻蟑螂一起度過時間。至於書房裡的獨角仙，以及騎士大會的事情，主角最終沒有再去了解。" }
                     ]
                 }
-            },
-
-
-            // --------------------------------------
-            // 話題二：關於變回人類
-            // --------------------------------------
-            {
-                title: "關於變回人類",
-                prompt: "你想向三隻蟑螂詢問哪件事？",
-
-                left: {
-                    label: "詢問變回人類",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "有沒有什麼辦法能讓我變回人類？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "變回人類？原來你原本是人類啊。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "抱歉，我們從來沒遇過這種事情，也不知道該怎麼做。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "如果想找出答案，可能得問問比我們更了解昆蟲世界的傢伙。" },
-                        { speaker: "主角", image: "images/4.png", text: "看來只能再想辦法找線索了……" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "別太著急，也許真的有人知道答案呢。" }
-                    ]
-                },
-
-                right: {
-                    label: "詢問如何生活",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "如果一直維持這個樣子，我該怎麼辦？" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛……首先，你得慢慢習慣現在的身體吧？" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "而且你現在的體型，跟一般蟑螂差太多了。" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "如果想在昆蟲世界生活，可能還有很多事情需要學習。" },
-                        { speaker: "主角", image: "images/4.png", text: "……聽起來好麻煩，我還是希望能變回人類。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "哈哈，慢慢來嘛！不用一下子就適應。" }
-                    ]
-                }
-            },
-
-
-            // --------------------------------------
-            // 話題三：關於這間房子
-            // --------------------------------------
-            {
-                title: "關於這間房子",
-                prompt: "你想向三隻蟑螂詢問哪件事？",
-
-                left: {
-                    label: "詢問房屋近況",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "你們最近常在這間房子活動嗎？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "是啊！最近這裡真的很適合生活。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "以前可沒這麼容易找到食物呢！" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "最近連一些角落都能找到不少東西。" },
-                        { speaker: "主角", image: "images/4.png", text: "所以這裡最近都沒有什麼人在打掃嗎？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "至少最近很少看到有人整理環境。" },
-                        { speaker: "主角", image: "images/4.png", text: "……這樣啊，難怪我覺得這裡有點熟悉。" }
-                    ]
-                },
-
-                right: {
-                    label: "詢問原本住戶",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "你們知道這間房子原本住著哪些人嗎？" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛，我們平常只在這裡活動。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "不太清楚房子裡原本住著哪些人。" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "我們平常比較在意哪裡有食物，倒是沒特別注意房子的主人。" },
-                        { speaker: "主角", image: "images/4.png", text: "……原來如此。我對這裡有種熟悉感，卻想不起來自己為什麼會有這種感覺。" }
-                    ]
-                }
-            },
-
-
-            // --------------------------------------
-            // 話題四：關於昆蟲騎士交流戰
-            // --------------------------------------
-            {
-                title: "關於昆蟲騎士交流戰",
-                prompt: "你想向三隻蟑螂詢問哪件事？",
-
-                left: {
-                    label: "詢問昆蟲世界的活動",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "昆蟲世界裡，有什麼比較重要的活動嗎？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "有啊！最重要的活動之一就是昆蟲騎士交流戰。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "每一屆都會有不同種類的昆蟲派出代表參加。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "像我們蟑螂，也會有自己的代表呢！" },
-                        { speaker: "主角", image: "images/4.png", text: "原來如此……那是什麼樣的活動？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "詳細情況我們也不太清楚，畢竟騎士會議的內容不是一般平民能知道的。" }
-                    ]
-                },
-
-                right: {
-                    label: "詢問自己的特殊身分",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "像我這樣突然變得這麼巨大的蟑螂，會不會有什麼特殊身分？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "說到特殊身分……每一屆昆蟲騎士交流戰，都會由不同種類的昆蟲派出代表。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "我們蟑螂當然也有自己的代表。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "你的體型和外觀都很特殊，說不定跟這件事有關。" },
-                        { speaker: "主角", image: "images/4.png", text: "所以……你們覺得我可能是蟑螂的代表？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "只是猜測而已，真正的事情還是得找了解騎士大會的人問問看。" }
-                    ]
-                }
-            },
-
-
-            // --------------------------------------
-            // 話題五：尋找能夠幫助主角的人
-            // --------------------------------------
-            {
-                title: "尋找能夠幫助主角的人",
-                prompt: "你想向三隻蟑螂詢問哪件事？",
-
-                left: {
-                    label: "詢問誰能幫助自己",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "如果我想找人了解自己的情況，該找誰？" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "這個嘛……另一間房間裡倒是有個傢伙。" },
-                        { speaker: "主角", image: "images/4.png", text: "那是誰？" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "牠知道不少昆蟲世界的事情。" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "或許牠能提供一些我們不知道的資訊。" }
-                    ]
-                },
-
-                right: {
-                    label: "詢問尋找線索的方法",
-                    steps: [
-                        { speaker: "主角", image: "images/4.png", text: "如果我想弄清楚自己為什麼變成這樣，應該從哪裡找線索？" },
-                        { speaker: "蟑螂 A", image: "images/6.png", text: "我們也不知道你的身上究竟發生了什麼事。" },
-                        { speaker: "蟑螂 B", image: "images/5.png", text: "不過，另一間房間裡有個傢伙，或許能幫上忙。" },
-                        { speaker: "蟑螂 C", image: "images/7.png", text: "牠對昆蟲世界的事情知道得比我們多。" },
-                        { speaker: "主角", image: "images/4.png", text: "另一間房間嗎……" }
-                    ]
-                }
-            }
-        ],
-
-
-        // ==========================================
-        // 第三階段：五個話題全部完成後
-        // 獨角仙情報與蟑螂 B 的挽留對話
-        // ==========================================
-        finalSteps: [
-            { speaker: "蟑螂 A", image: "images/6.png", text: "對了，我們想到一個可能知道答案的傢伙。" },
-            { speaker: "主角", image: "images/4.png", text: "誰？" },
-            { speaker: "蟑螂 C", image: "images/7.png", text: "住在書房裡的一隻獨角仙。" },
-            { speaker: "主角", image: "images/4.png", text: "獨角仙？" },
-            { speaker: "蟑螂 C", image: "images/7.png", text: "沒錯！牠對昆蟲騎士交流戰的事情非常了解，應該能回答你不少問題。" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "不過……牠的個性有點奇怪。" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "有時候就像個小孩子一樣，精力旺盛，對什麼事情都很有興趣。" },
-            { speaker: "蟑螂 C", image: "images/7.png", text: "所以平常很少有昆蟲會主動找牠聊天。" },
-            { speaker: "主角", image: "images/4.png", text: "原來如此……" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "如果你想弄清楚自己的狀況，或許可以去書房找牠問問。" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "等一下，我倒是覺得沒必要特地去找牠吧？" },
-            { speaker: "主角", image: "images/4.png", text: "為什麼？" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "難得遇到新朋友，不如留下來跟我們三個一起玩啊！" },
-            { speaker: "蟑螂 C", image: "images/7.png", text: "對啊！我們可以陪你聊天，也可以一起找食物。這間房子裡的食物夠我們吃上一陣子了。" },
-            { speaker: "蟑螂 A", image: "images/6.png", text: "而且那隻獨角仙整天都在講騎士大會，搞不好會很無聊呢。" },
-            { speaker: "蟑螂 B", image: "images/5.png", text: "怎麼樣？要不要留下來？" }
-        ],
-
-
-        // ==========================================
-        // 第四階段：最後決策與各自的告別對話
-        // ==========================================
-        finalDecision: {
-            title: "最後的決定",
-
-            description: "眼前的三隻蟑螂似乎很歡迎主角加入牠們。另一方面，書房裡的獨角仙或許知道更多關於昆蟲騎士交流戰的情報，也可能幫助主角找到變回人類的線索。\n\n主角必須決定接下來的行動。",
-
-            left: {
-                label: "🚪 前往書房",
-                next: "find_beetle",
-
-                steps: [
-                    { speaker: "主角", image: "images/4.png", text: "謝謝你們，不過我還是想去問問那隻獨角仙。" },
-                    { speaker: "蟑螂 B", image: "images/5.png", text: "這樣啊……那好吧！" },
-                    { speaker: "蟑螂 C", image: "images/7.png", text: "祝你順利喔！" },
-                    { speaker: "蟑螂 A", image: "images/6.png", text: "如果有機會，下次再一起聊天吧！" },
-                    { speaker: "旁白", text: "主角向三隻蟑螂道別，朝書房的方向前進。" }
-                ]
-            },
-
-            right: {
-                label: "留下來與三隻蟑螂一起玩",
-                next: "ending_3",
-
-                steps: [
-                    { speaker: "主角", image: "images/4.png", text: "嗯……好吧，難得有人願意陪我聊天。" },
-                    { speaker: "蟑螂 B", image: "images/5.png", text: "太好了！那就一起玩吧！" },
-                    { speaker: "蟑螂 C", image: "images/7.png", text: "哈哈哈！今天又有新朋友了！" },
-                    { speaker: "旁白", text: "主角決定留在餐桌底下，與三隻蟑螂一起度過時間。至於書房裡的獨角仙，以及騎士大會的事情，主角最終沒有再去了解。" }
-                ]
             }
         }
-    }
     },
-}
+
+    find_beetle: {
+        chapter: "第二章・怪異的學者",
+        title: "書房的陰影",
+        description: "你穿過門縫進入了書房，周圍堆滿了巨大如山丘般的書籍……\n\n（獨角仙劇情待續）",
+        image: "images/study_room.png",
+        left: { label: "↻ 返回開頭測試", next: "start" },
+        right: { label: "↻ 返回開頭測試", next: "start" }
+    }
+};
 
 /* =================================
    2. 全局狀態與控制變數
@@ -330,6 +303,7 @@ let currentCardId = "start";
 let isAnimating = false;
 let isDragging = false;
 let awakeStage = 0;
+let startSequenceComplete = false;
 let startX = 0, startY = 0;
 let currentX = 0, currentY = 0;
 const SWIPE_THRESHOLD = 120;
@@ -346,7 +320,7 @@ const DIALOGUE_SPEAKER_IMAGES = {
     "蟑螂 C": "images/7.png"
 };
 
-// 各角色說話音效基礎音高（Hz，營造 Inscryption 角色聲音差異）
+// 各角色說話音效基礎音高（Hz）
 const SPEAKER_VOICE_PITCH = {
     "主角": 135,
     "蟑螂 A": 195,
@@ -354,7 +328,7 @@ const SPEAKER_VOICE_PITCH = {
     "蟑螂 C": 240
 };
 
-// 預先載入角色圖片並自動偵測是否為「左右並排閉嘴/張嘴圖」
+// 預先載入角色圖片並自動偵測是否為左右並排圖
 const DIALOGUE_IMAGE_CACHE = {};
 function cacheDialogueImage(imagePath) {
     if (!imagePath || DIALOGUE_IMAGE_CACHE[imagePath]) return DIALOGUE_IMAGE_CACHE[imagePath];
@@ -404,7 +378,7 @@ let audioCtx = null;
 
 function playSpeakerBlip(speaker) {
     const baseFreq = SPEAKER_VOICE_PITCH[speaker];
-    if (!baseFreq) return; // 旁白不發聲
+    if (!baseFreq) return;
 
     try {
         if (!audioCtx) {
@@ -439,6 +413,27 @@ function playSpeakerBlip(speaker) {
 }
 
 /* =================================
+   2-2. 對話框像素按壓凹陷回饋（1-2px）
+================================= */
+function bindDialogPressFeedback(card) {
+    const contentBox = card.querySelector(".card-content");
+    if (!contentBox) return;
+
+    const pressDown = () => {
+        if (isDragging) return;
+        contentBox.classList.add("is-pressed");
+    };
+    const releasePress = () => {
+        contentBox.classList.remove("is-pressed");
+    };
+
+    card.addEventListener("pointerdown", pressDown);
+    card.addEventListener("pointerup", releasePress);
+    card.addEventListener("pointerleave", releasePress);
+    card.addEventListener("pointercancel", releasePress);
+}
+
+/* =================================
    3. 核心卡片渲染 renderCard()
 ================================= */
 function renderCard() {
@@ -446,7 +441,6 @@ function renderCard() {
     if (!data) return;
 
     if (!data.dialogueFlow) currentDialogueFlow = null;
-
     if (data.onEnter) data.onEnter();
 
     if (typingTimer) {
@@ -467,6 +461,12 @@ function renderCard() {
 
     gameOver.hidden = true;
     awakeStage = 0;
+    startSequenceComplete = false;
+
+    if (currentCardId === "start") {
+        renderStartCard(data);
+        return;
+    }
 
     currentTextSegments = [];
     currentTextSegmentIndex = 0;
@@ -479,12 +479,8 @@ function renderCard() {
     const card = document.createElement("div");
     card.className = "story-card waiting-click";
 
-    const visualClass = (currentCardId === "start")
-        ? "full-screen blackout"
-        : "full-screen blurred";
-
     card.innerHTML = `
-        <div class="card-image ${visualClass}">
+        <div class="card-image full-screen blurred">
             <span>[ 像素圖片區域 ]</span>
         </div>
         <div class="wake-hint">（醒來）</div>
@@ -517,6 +513,7 @@ function renderCard() {
     rightHint.textContent = data.right ? data.right.label + " →" : "";
 
     viewport.appendChild(card);
+    bindDialogPressFeedback(card);
 
     card.addEventListener("click", function handleCardClick() {
         if (isDragging) return;
@@ -589,6 +586,197 @@ function renderCard() {
 }
 
 /* =================================
+   3-1. 開場專屬演出（僅限 start）
+================================= */
+function renderStartCard(data) {
+    const lines = splitTextIntoSegments(data.description || "");
+    let step = 0;
+    let currentLineText = "";
+
+    const card = document.createElement("div");
+    card.className = "story-card waiting-click";
+    card.innerHTML = `
+        <div class="card-image start-stage full-screen blackout">
+            <div class="dialogue-portrait"></div>
+            <span>[ 像素圖片區域 ]</span>
+        </div>
+        <div class="wake-hint">（醒來）</div>
+        <div class="card-content">
+            <h2></h2>
+            <p></p>
+        </div>
+        <div class="swipe-hint hint-left"></div>
+        <div class="swipe-hint hint-right"></div>
+    `;
+
+    const imageArea = card.querySelector(".card-image");
+    const portraitEl = imageArea.querySelector(".dialogue-portrait");
+    const spanArea = imageArea.querySelector("span");
+    const titleEl = card.querySelector("h2");
+    const descEl = card.querySelector("p");
+
+    if (data.image && data.image.trim() !== "") {
+        portraitEl.style.backgroundImage = `url("${data.image}")`;
+        if (spanArea) spanArea.style.display = "none";
+    }
+
+    card.querySelector(".hint-left").textContent = data.left ? "← " + data.left.label : "";
+    card.querySelector(".hint-right").textContent = data.right ? data.right.label + " →" : "";
+
+    viewport.appendChild(card);
+    bindDialogPressFeedback(card);
+
+    function triggerViolentShake() {
+        card.classList.remove("start-violent-shake");
+        void card.offsetWidth;
+        card.classList.add("start-violent-shake");
+        setTimeout(() => {
+            card.classList.remove("start-violent-shake");
+        }, 420);
+    }
+
+    function playStartLine(lineIndex, talkVoice = null, isFinalLine = false) {
+        isAnimating = true;
+        currentLineText = lines[lineIndex] || "";
+
+        if (talkVoice) {
+            portraitEl.classList.add("is-talking");
+        }
+
+        typeText(
+            descEl,
+            currentLineText,
+            38,
+            () => {
+                portraitEl.classList.remove("is-talking");
+                isAnimating = false;
+                if (isFinalLine) {
+                    startSequenceComplete = true;
+                    awakeStage = 2;
+                }
+            },
+            (ch, idx) => {
+                if (!talkVoice) return;
+                if (!/[，。！？、…；：「」~\s]/.test(ch) && idx % 2 === 0) {
+                    playSpeakerBlip(talkVoice);
+                }
+            }
+        );
+    }
+
+    card.addEventListener("click", () => {
+        if (isDragging) return;
+
+        // 打字中點擊 -> 快轉顯示整句並切回待機晃動
+        if (isAnimating && typingTimer) {
+            clearInterval(typingTimer);
+            typingTimer = null;
+            titleEl.textContent = data.title || "";
+            descEl.textContent = currentLineText;
+            titleEl.classList.remove("typing-cursor");
+            descEl.classList.remove("typing-cursor");
+            portraitEl.classList.remove("is-talking");
+            isAnimating = false;
+
+            if (step >= 3 + (lines.length - 1)) {
+                startSequenceComplete = true;
+                awakeStage = 2;
+            }
+            return;
+        }
+
+        if (isAnimating) return;
+
+        // 【點擊 1】醒來：中心微露圖片、四周依然黑暗的朦朧狀態
+        if (step === 0) {
+            step = 1;
+            imageArea.classList.remove("blackout");
+            imageArea.classList.add("start-hazy");
+
+            const wakeHint = card.querySelector(".wake-hint");
+            if (wakeHint) {
+                wakeHint.classList.add("fade-out");
+                setTimeout(() => { wakeHint.style.display = "none"; }, 800);
+            }
+            return;
+        }
+
+        // 【點擊 2】字幕上升，顯示「某天早晨，你從一場不安的夢中醒來...」
+        if (step === 1) {
+            step = 2;
+            isAnimating = true;
+            card.classList.remove("waiting-click");
+            imageArea.classList.remove("full-screen");
+
+            setTimeout(() => {
+                typeText(titleEl, data.title || "", 50, () => {
+                    playStartLine(0, null, false);
+                });
+            }, 850);
+            return;
+        }
+
+        // 【點擊 3】卡片劇烈抖動一瞬間 + 字幕收下去 + 黑色遮蔽全部消失
+        if (step === 2) {
+            step = 3;
+            isAnimating = true;
+            triggerViolentShake();
+
+            titleEl.textContent = "";
+            descEl.textContent = "";
+            imageArea.classList.add("full-screen");
+            imageArea.classList.remove("start-hazy");
+            imageArea.classList.add("clear");
+
+            setTimeout(() => {
+                isAnimating = false;
+            }, 900);
+            return;
+        }
+
+        // 【點擊 4】字幕上升 + 開啟與對話完全相同的 is-idle 晃動 + 「這是怎麼回事!?我怎麼會變這樣!?」說話晃動
+        if (step === 3) {
+            step = 4;
+            isAnimating = true;
+            imageArea.classList.remove("full-screen");
+            portraitEl.classList.add("is-idle");
+
+            setTimeout(() => {
+                typeText(titleEl, data.title || "", 45, () => {
+                    playStartLine(1, "主角", false);
+                });
+            }, 850);
+            return;
+        }
+
+        // 【點擊 5 之後】依序播放剩餘台詞
+        const nextLineIdx = step - 2;
+        if (nextLineIdx < lines.length) {
+            step++;
+            const isLast = (nextLineIdx === lines.length - 1);
+
+            // 「此時，門外傳來一道聲音...」-> 劇烈抖動一瞬間
+            if (nextLineIdx === lines.length - 2) {
+                triggerViolentShake();
+                playStartLine(nextLineIdx, null, false);
+                return;
+            }
+
+            // 「「喔依~大家快來吃東西!」」-> 配合字幕出現說話晃動
+            if (isLast) {
+                playStartLine(nextLineIdx, "蟑螂 A", true);
+                return;
+            }
+
+            // 中間獨白：維持 is-idle 輕微晃動，不觸發說話晃動
+            playStartLine(nextLineIdx, null, false);
+        }
+    });
+
+    bindCardEvents(card);
+}
+
+/* =================================
    4. 字幕上升動畫與打字流程
 ================================= */
 function splitTextIntoSegments(text, maxLength = 80) {
@@ -643,7 +831,7 @@ function triggerAwakeAnimation(card, data) {
     }, 850);
 }
 
-/* 通用打字機函式（支援選填的 onChar 回呼以同步嘴型與音效） */
+/* 通用打字機函式 */
 function typeText(element, text, speed, onComplete, onChar) {
     let index = 0;
     element.textContent = "";
@@ -707,6 +895,7 @@ function renderDialogueFlow(data) {
 
     currentDialogueFlow.card = card;
     viewport.appendChild(card);
+    bindDialogPressFeedback(card);
 
     card.addEventListener("click", () => {
         const session = currentDialogueFlow;
@@ -759,7 +948,6 @@ function playDialogueSequence(steps, heading, onComplete) {
     renderCurrentDialogueStep();
 }
 
-// 停止說話擺動並閉上嘴巴（保留輕微呼吸待機）
 function stopDialoguePortraitTalk(card) {
     if (!card) return;
     const portraitEl = card.querySelector(".dialogue-portrait");
@@ -795,7 +983,6 @@ function renderCurrentDialogueStep() {
         portraitEl.style.backgroundImage = `url("${imagePath}")`;
         if (spanArea) spanArea.style.display = "none";
 
-        // 自動判斷是否為左右並排閉嘴/張嘴圖（如 images/5.png）
         const cachedImg = cacheDialogueImage(imagePath);
         const applySpriteFlag = () => {
             if (cachedImg.naturalWidth > cachedImg.naturalHeight) {
@@ -808,7 +995,6 @@ function renderCurrentDialogueStep() {
             cachedImg.addEventListener("load", applySpriteFlag, { once: true });
         }
 
-        // 開啟呼吸待機與說話微晃
         portraitEl.classList.add("is-idle", "is-talking");
     } else {
         portraitEl.style.display = "none";
@@ -836,7 +1022,6 @@ function renderCurrentDialogueStep() {
             stopDialoguePortraitTalk(card);
         },
         (ch, charIdx) => {
-            // 跳過「角色名：\n」前綴，只在真正講台詞時動嘴巴與發聲
             if (charIdx < prefix.length) return;
 
             const spokenIdx = charIdx - prefix.length;
@@ -954,7 +1139,7 @@ function setupDialogueChoice(mode, title, description, leftChoice, rightChoice) 
     const spanArea = imageArea.querySelector("span");
     if (spanArea) {
         spanArea.style.display = "block";
-        spanArea.textContent = "[ 請選擇對話方向 ]";
+        spanArea.textContent = "[ 左右滑動做出選擇 ]";
     }
 
     const leftHint = card.querySelector(".hint-left");
@@ -1115,9 +1300,13 @@ function showAchievement(data) {
 }
 
 /* =================================
-   7. 卡片拖曳與手勢處理（徹底防手機卡死版）
+   7. 卡片拖曳與手勢處理
 ================================= */
 function canUseSwipe() {
+    if (currentCardId === "start") {
+        return !isAnimating && startSequenceComplete;
+    }
+
     if (isAnimating || awakeStage < 2) return false;
 
     if (currentDialogueFlow) {
@@ -1264,6 +1453,7 @@ function restartGame() {
     isAnimating = false;
     isDragging = false;
     awakeStage = 0;
+    startSequenceComplete = false;
     currentX = 0;
     currentY = 0;
     startX = 0;
@@ -1274,4 +1464,5 @@ function restartGame() {
     renderCard();
 }
 
+initAmbientDust();
 renderCard();

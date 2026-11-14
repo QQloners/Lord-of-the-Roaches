@@ -3,29 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Story Card - Pixel Fantasy</title>
+    <title>Lord of the Roaches</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 引入像素藝術字體 -->
+    <!-- 引入英數像素字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <!-- 環境氛圍背景層（不阻擋滑鼠與觸控操作） -->
+    <div id="bg-atmosphere" aria-hidden="true">
+        <div class="bg-spotlight"></div>
+        <div id="dust-layer"></div>
+        <div class="bg-scanlines"></div>
+        <div class="bg-vignette"></div>
+
+        <!-- 角落極低亮度像素剪影：左上／右下觸角與散落紙張 -->
+        <svg class="corner-decor top-right" viewBox="0 0 32 32" shape-rendering="crispEdges">
+            <path fill="#9fb396" d="M28 0h4v6h-2v4h-2v3h-2v2h-2v-2h2v-3h2V6h2V0zm-8 0h3v4h-2v3h-2v2h-2V7h2V4h1V0zm6 13h6v8h-3v4h-4v-3h-2v-4h3v-5z"/>
+        </svg>
+        <svg class="corner-decor bottom-left" viewBox="0 0 40 32" shape-rendering="crispEdges">
+            <path fill="#9fb396" d="M2 14h14v16H2V14zm2 2v12h10V16H4zm2 2h6v2H6v-2zm0 4h8v2H6v-2zm13-4h13v14H19V18zm2 2v10h9V20h-9zm2 2h5v2h-5v-2z"/>
+        </svg>
+    </div>
 
     <header class="game-header">
         <h1>Lord of the Roaches</h1>
         <p id="chapter-name">第一章・開始</p>
     </header>
 
-    <!-- 劇情卡片容器：確保外層 overflow 可見，不遮擋卡片滑動 -->
+    <!-- 劇情卡片容器 -->
     <main id="game-viewport"></main>
 
     <!-- 結局畫面 -->
     <div id="game-over" hidden>
-    <div class="achievement-badge">🏆</div>
-    <div class="achievement-tag">ACHIEVEMENT UNLOCKED</div>
-    <h2 id="over-title">【結局1：封閉的房間】</h2>
-    <p id="over-msg">你解鎖了成就：孤獨的死因。</p>
-    <button onclick="restartGame()">↻ 重新開始冒險</button>
-</div>
+        <div class="achievement-badge">🏆</div>
+        <div class="achievement-tag">ACHIEVEMENT UNLOCKED</div>
+        <h2 id="over-title">【結局1：封閉的房間】</h2>
+        <p id="over-msg">你解鎖了成就：孤獨的死因。</p>
+        <button onclick="restartGame()">↻ 重新開始冒險</button>
+    </div>
 
     <script src="script.js"></script>
 </body>

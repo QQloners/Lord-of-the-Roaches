@@ -412,7 +412,7 @@ function playSpeakerBlip(speaker) {
     } catch (e) {}
 }
 /* =================================
-   2-1B. Web Audio 紙張摩擦與抽卡音效
+   2-1B. Web Audio 紙質卡片摩擦與抽卡音效
 ================================= */
 function playCardSound(type = "pick") {
     try {
@@ -423,37 +423,95 @@ function playCardSound(type = "pick") {
             audioCtx.resume();
         }
 
-        const duration = type === "swipe" ? 0.11 : 0.055;
+        const now = audioCtx.currentTime;
+
+        // 1. 紙張纖維摩擦聲（使用無共鳴峰的柔和濾波，徹底消除金屬感）
+        const duration = type === "swipe" ? 0.13 : (type === "return" ? 0.055 : 0.045);
         const bufferSize = Math.floor(audioCtx.sampleRate * duration);
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
 
+        // 對相鄰樣本做平滑處理，模擬霧面紙張纖維而非刺耳白噪音
+        let lastOut = 0;
         for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+            const white = Math.random() * 2 - 1;
+            data[i] = (lastOut + 0.35 * white) / 1.35;
+            lastOut = data[i];
         }
 
         const noise = audioCtx.createBufferSource();
         noise.buffer = buffer;
 
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = "bandpass";
-        filter.frequency.setValueAtTime(
-            type === "swipe" ? 1350 : (type === "pick" ? 1050 : 780),
-            audioCtx.currentTime
-        );
-        filter.Q.setValueAtTime(1.4, audioCtx.currentTime);
+        // 高通濾波：濾掉低頻轟鳴
+        const highpass = audioCtx.createBiquadFilter();
+        highpass.type = "highpass";
+        highpass.frequency.setValueAtTime(type === "swipe" ? 550 : 450, now);
+        highpass.Q.setValueAtTime(0.5, now);
+
+        // 低通濾波：壓低 Q 值以保留紙卡的溫潤霧面質感
+        const lowpass = audioCtx.createBiquadFilter();
+        lowpass.type = "lowpass";
+        lowpass.Q.setValueAtTime(0.6, now);
 
         const gain = audioCtx.createGain();
-        const peakGain = type === "swipe" ? 0.09 : 0.05;
-        gain.gain.setValueAtTime(peakGain, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
 
-        noise.connect(filter);
-        filter.connect(gain);
+        if (type === "swipe") {
+            // 滑開卡片：紙面快速擦過卡堆的「刷——」聲
+            lowpass.frequency.setValueAtTime(1600, now);
+            lowpass.frequency.linearRampToValueAtTime(3400, now + duration * 0.45);
+            lowpass.frequency.exponentialRampToValueAtTime(1400, now + duration);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.11, now + 0.018);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        } else if (type === "return") {
+            // 放回卡堆：輕微的紙張貼合聲
+            lowpass.frequency.setValueAtTime(1500, now);
+            lowpass.frequency.exponentialRampToValueAtTime(850, now + duration);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.06, now + 0.008);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        } else {
+            // 拿起卡片：指尖撥動紙緣的輕脆聲
+            lowpass.frequency.setValueAtTime(2400, now);
+            lowpass.frequency.exponentialRampToValueAtTime(1200, now + duration);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.075, now + 0.006);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        }
+
+        noise.connect(highpass);
+        highpass.connect(lowpass);
+        lowpass.connect(gain);
         gain.connect(audioCtx.destination);
 
-        noise.start();
-        noise.stop(audioCtx.currentTime + duration);
+        noise.start(now);
+        noise.stop(now + duration);
+
+        // 2. 厚紙板彈性微悶響（僅在拿起與放回時補上一點紙卡厚度感）
+        if (type === "pick" || type === "return") {
+            const thudOsc = audioCtx.createOscillator();
+            const thudGain = audioCtx.createGain();
+            thudOsc.type = "sine";
+
+            const startFreq = type === "pick" ? 135 : 105;
+            const endFreq = type === "pick" ? 55 : 42;
+            const thudDur = 0.032;
+
+            thudOsc.frequency.setValueAtTime(startFreq, now);
+            thudOsc.frequency.exponentialRampToValueAtTime(endFreq, now + thudDur);
+
+            thudGain.gain.setValueAtTime(0.045, now);
+            thudGain.gain.exponentialRampToValueAtTime(0.001, now + thudDur);
+
+            thudOsc.connect(thudGain);
+            thudGain.connect(audioCtx.destination);
+
+            thudOsc.start(now);
+            thudOsc.stop(now + thudDur);
+        }
     } catch (e) {}
 }
 

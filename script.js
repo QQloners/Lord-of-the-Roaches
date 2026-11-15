@@ -29,19 +29,19 @@ function initAmbientDust() {
 const STORY_DATA = {
     // 故事開頭（第一張圖：images/1.png，預設全黑）
     start: {
-        chapter: "第一章・異變",
-        title: "白色軀體",
+        chapter: "第一章・卵鞘",
+        title: "純白的惡夢",
         description: "某天早晨，你從一場不安的夢中醒來...\n這是怎麼回事!?我怎麼會變這樣!?\n你驚恐的吶喊...\n然而...\n此時的你...\n什麼都想不起來...\n也不知道...\n只確定自己曾經人類...\n此時，門外傳來一道聲音...\n「喔依~大家快來吃東西!」",
         image: "images/1.png",
-        left: { label: "🚪 鎖門不出", next: "ending_1" },
-        right: { label: "🚪 打開房門", next: "dining_room" }
+        left: { label: "🚪 永遠不出門，絕對不想被人看見自己現在的樣子", next: "ending_1" },
+        right: { label: "🚪 鼓起勇氣打開房門，想辦法尋求協助", next: "dining_room" }
     },
 
     // 結局 1
     ending_1: {
-        chapter: "終章・絕望",
+        chapter: "終章・孤獨",
         title: "【結局1：封閉的房間】",
-        achievement: "🏆 解鎖成就：孤獨的死因",
+        achievement: "🏆 解鎖成就：不見天日",
         description: "你選擇將自己死死關在房間裡...\n沒有勇氣踏出房門，也沒有嘗試尋找任何人。\n\n最後，你在無盡的恐懼與飢餓中，靜靜地死在了房間內...",
         image: "images/ending_1.png",
         ending: true
@@ -49,9 +49,9 @@ const STORY_DATA = {
 
     // 餐桌之下（預設模糊背景）
     dining_room: {
-        chapter: "第一章・餐桌之下",
-        title: "同類的身影",
-        description: "你鼓起勇氣打開房門，循著聲音一步步挪動軀體來到餐桌附近...\n\n透過陰影張望，你驚訝地發現餐桌底下正有三隻蟑螂聚集在一起，低聲碎碎唸著什麼...",
+        chapter: "第一章・卵鞘",
+        title: "無人接聽",
+        description: "你鼓起勇氣打開房門\n然而映入眼簾的是空無一人的走廊\n但你仍然聽見窸窣的聲音從客廳傳來...\n你循著聲音一步步挪動軀體來到餐桌附近...\n\n透過陰影張望，並發現餐桌底下正有三隻蟑螂聚集在一起，低聲碎唸著什麼...",
         image: "images/2.png",
         left: { label: "👂 隱蔽偷聽", next: "eavesdrop" },
         right: { label: "💬 上前搭話", next: "talk_to_bugs" }
@@ -59,9 +59,9 @@ const STORY_DATA = {
 
     // 2. 偷聽劇情（暗中紀錄條件 1）
     eavesdrop: {
-        chapter: "第一章・偷聽情報",
-        title: "牆角裡的碎碎唸",
-        description: "你屏住呼吸，將觸角貼近陰影深處……\n\n蟑螂A：「欸，你們有沒有發現最近這屋子的主人都不打掃了？」\n蟑螂B：「對啊！地上全是餅乾屑和油垢，簡直是天堂！」\n蟑螂C：「嘿嘿，這主人大概是放棄人生了吧？便宜我們了～」",
+        chapter: "第一章・卵鞘",
+        title: "無主之地?",
+        description: "你屏住呼吸，將觸角貼近陰影深處……\n\n蟑螂A：「太好了!自從上一次這家的屋主離開後就不再打掃了!」\n蟑螂B：「可是...這間房子不是還有一個人嗎？」\n蟑螂C：「有人才有食物哪!看開點...重點是他不愛打掃!」",
         image: "images/3.png",
         onEnter: () => {
             secretEndingCondition1 = true;
@@ -91,7 +91,7 @@ const STORY_DATA = {
 
     // 4. 初次接觸、五個話題、獨角仙情報與最後決策
     talk_to_bugs: {
-        chapter: "第一章・騎士的宿命",
+        chapter: "第一章・卵鞘",
 
         dialogueFlow: {
             intro: [

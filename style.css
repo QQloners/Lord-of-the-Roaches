@@ -171,7 +171,7 @@ html, body {
     z-index: 5;
 }
 
-/* 墊在主卡片後方的兩張像素格紋卡背，暗示牌堆厚度 */
+/* 墊在主卡片後方的兩張舊化厚紙卡背（暖褐牛皮紙色調＋像素斜紋） */
 #game-viewport::before,
 #game-viewport::after {
     content: "";
@@ -180,18 +180,18 @@ html, body {
     max-width: 440px;
     height: 540px;
     border-radius: 18px;
-    background-color: #121613;
+    background-color: #171410;
     background-image: repeating-linear-gradient(
         45deg,
-        #171d18 0px,
-        #171d18 4px,
-        #0f1310 4px,
-        #0f1310 8px
+        #1e1a14 0px,
+        #1e1a14 4px,
+        #14110d 4px,
+        #14110d 8px
     );
-    border: 3px solid #4a412a;
+    border: 3px solid #574933;
     box-shadow:
-        inset 0 0 0 3px #090b0a,
-        inset 0 0 0 5px #2a3125,
+        inset 0 0 0 3px #0c0a08,
+        inset 0 0 0 5px #332a1d,
         0 14px 30px rgba(0, 0, 0, 0.92);
     pointer-events: none;
 }
@@ -207,7 +207,7 @@ html, body {
 }
 
 /* =================================
-   4. 硬派工業風像素卡片邊框
+   4. 霧面厚紙卡風格邊框（Paper Cardstock）
 ================================= */
 .story-card,
 .story-card * {
@@ -222,23 +222,23 @@ html, body {
     width: 90%;
     max-width: 440px;
     height: 540px;
-    background: #101311;
+    background: #15130f;
 
+    /* 暖調舊化紙卡邊緣（外層米褐紙邊＋內層壓紋紙槽＋桌面投影） */
     border-radius: 18px;
-    border: 4px solid #8a7848;
+    border: 4px solid #9c845c;
     box-shadow:
-        inset 0 0 0 2px #1e221b,
-        inset 0 0 0 4px #080a09,
-        0 0 0 3px #2b2618,
-        0 0 0 6px #060706,
-        0 20px 42px rgba(0, 0, 0, 0.96);
+        inset 0 0 0 2px #362d20,
+        inset 0 0 0 4px #0e0c0a,
+        0 0 0 2px #292218,
+        0 0 0 5px #070605,
+        0 18px 38px rgba(0, 0, 0, 0.95);
 
     overflow: hidden;
     display: flex;
     flex-direction: column;
 
     cursor: grab;
-    /* 旋轉支點設在卡片底部偏下，模擬拇指捏住卡底左右扇動 */
     transform-origin: 50% 115%;
     transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
     transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease;
@@ -246,41 +246,32 @@ html, body {
     z-index: 5;
 }
 
-/* 硬邊階梯狀像素卡面反光（無柔和漸層，保持復古銳利感） */
+/* 霧面紙張纖維微粒與紙緣舊化暗角（取代金屬反光） */
 .story-card::after {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 30;
-    background: linear-gradient(
-        115deg,
-        transparent 38%,
-        rgba(225, 232, 205, 0.05) 38%,
-        rgba(225, 232, 205, 0.05) 45%,
-        rgba(225, 232, 205, 0.11) 45%,
-        rgba(225, 232, 205, 0.11) 48%,
-        transparent 48%
-    );
-    transform: translateX(var(--sheen-x, -120%));
-    transition: transform 0.35s ease-out;
+    border-radius: 14px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6'%3E%3Crect width='2' height='2' fill='%23e8d8b5' fill-opacity='0.045'/%3E%3Crect x='3' y='2' width='2' height='2' fill='%23000000' fill-opacity='0.08'/%3E%3Crect x='1' y='4' width='2' height='2' fill='%23d4c29a' fill-opacity='0.035'/%3E%3C/svg%3E");
+    image-rendering: pixelated;
+    box-shadow:
+        inset 0 0 22px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(235, 216, 178, 0.14);
 }
 
-/* 抓起卡片時的浮空與加亮回饋 */
+/* 抓起紙卡時：陰影拉深遠離桌面，呈現紙卡浮空感 */
 .story-card.dragging {
     transition: none !important;
     cursor: grabbing;
-    border-color: #c5d19b;
+    border-color: #bfa67a;
     box-shadow:
-        inset 0 0 0 2px #293023,
-        inset 0 0 0 4px #080a09,
-        0 0 0 3px #4b543b,
-        0 0 0 6px #060706,
-        0 34px 65px rgba(0, 0, 0, 0.98);
-}
-
-.story-card.dragging::after {
-    transition: none !important;
+        inset 0 0 0 2px #473b2a,
+        inset 0 0 0 4px #0e0c0a,
+        0 0 0 2px #382f21,
+        0 0 0 5px #070605,
+        0 32px 60px rgba(0, 0, 0, 0.98);
 }
 
 .story-card.waiting-click {
@@ -289,7 +280,7 @@ html, body {
 
 .story-card.waiting-click:hover {
     transform: translate3d(0, -5px, 0);
-    border-color: #b8a363;
+    border-color: #b59b6e;
 }
 
 /* =================================
@@ -447,14 +438,13 @@ html, body {
     min-height: 0;
     margin: 6px;
     padding: 10px 14px;
-    background: #090b0a;
-    border-radius: 10px; /* 👈 新增這一行，貼合卡片底部圓角 */
+    background: #0d0b09;
+    border-radius: 10px;
 
-    /* 經典 RPG 雙層像素邊框 */
-    border: 2px solid #8a7848;
+    border: 2px solid #8f7852;
     box-shadow:
-        inset 0 0 0 2px #090b0a,
-        inset 0 0 0 4px #3c4432;
+        inset 0 0 0 2px #0d0b09,
+        inset 0 0 0 4px #3b3224;
 
     overflow: hidden;
     transition: transform 0.06s steps(1), box-shadow 0.06s steps(1);

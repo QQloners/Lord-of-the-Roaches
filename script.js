@@ -411,6 +411,51 @@ function playSpeakerBlip(speaker) {
         osc.stop(audioCtx.currentTime + 0.045);
     } catch (e) {}
 }
+/* =================================
+   2-1B. Web Audio 紙張摩擦與抽卡音效
+================================= */
+function playCardSound(type = "pick") {
+    try {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === "suspended") {
+            audioCtx.resume();
+        }
+
+        const duration = type === "swipe" ? 0.11 : 0.055;
+        const bufferSize = Math.floor(audioCtx.sampleRate * duration);
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(
+            type === "swipe" ? 1350 : (type === "pick" ? 1050 : 780),
+            audioCtx.currentTime
+        );
+        filter.Q.setValueAtTime(1.4, audioCtx.currentTime);
+
+        const gain = audioCtx.createGain();
+        const peakGain = type === "swipe" ? 0.09 : 0.05;
+        gain.gain.setValueAtTime(peakGain, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        noise.start();
+        noise.stop(audioCtx.currentTime + duration);
+    } catch (e) {}
+}
 
 /* =================================
    2-2. 對話框像素按壓凹陷回饋（1-2px）
@@ -1336,6 +1381,8 @@ function bindCardEvents(card) {
         currentX = 0;
 
         card.classList.add("dragging");
+        card.style.transform = "translate3d(0, -4px, 0) rotate(0deg) scale(1.03)";
+        if (typeof playCardSound === "function") playCardSound("pick");
 
         try {
             card.setPointerCapture(event.pointerId);
@@ -1354,9 +1401,11 @@ function bindCardEvents(card) {
         if (event.cancelable) event.preventDefault();
 
         currentX = event.clientX - startX;
-        const rotation = currentX * 0.075;
+        const rotation = currentX * 0.065;
 
-        card.style.transform = `translate3d(${currentX}px, 0, 0) rotate(${rotation}deg)`;
+        card.style.transform = `translate3d(${currentX}px, -4px, 0) rotate(${rotation}deg) scale(1.03)`;
+        const sheenOffset = (currentX / Math.max(card.offsetWidth, 1)) * 150;
+        card.style.setProperty("--sheen-x", `${sheenOffset}%`);
 
         const progress = Math.min(Math.abs(currentX) / SWIPE_THRESHOLD, 1);
         if (currentX < 0) {
@@ -1402,9 +1451,13 @@ function bindCardEvents(card) {
 
 function returnCard(card) {
     card.style.transition = "transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)";
-    card.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
+    card.style.transform = "translate3d(0, 0, 0) rotate(0deg) scale(1)";
+    card.style.setProperty("--sheen-x", "-120%");
     card.querySelector(".hint-left").style.opacity = 0;
     card.querySelector(".hint-right").style.opacity = 0;
+    if (Math.abs(currentX) > 12 && typeof playCardSound === "function") {
+        playCardSound("return");
+    }
     currentX = 0;
 }
 
@@ -1413,6 +1466,7 @@ function makeChoice(direction) {
 
     if (currentDialogueFlow &&
         (currentDialogueFlow.mode === "topic-choice" || currentDialogueFlow.mode === "final-choice")) {
+        if (typeof playCardSound === "function") playCardSound("swipe");
         handleDialogueFlowChoice(direction);
         return;
     }
@@ -1425,6 +1479,8 @@ function makeChoice(direction) {
     if (!selectedChoice || !STORY_DATA[selectedChoice.next]) return;
 
     isAnimating = true;
+    if (typeof playCardSound === "function") playCardSound("swipe");
+
     const card = viewport.querySelector(".story-card");
     if (!card) return;
 

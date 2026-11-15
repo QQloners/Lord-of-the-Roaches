@@ -157,7 +157,7 @@ html, body {
 }
 
 /* =================================
-   3. 卡片容器
+   3. 卡片容器與後方卡堆疊層（Card Stack）
 ================================= */
 #game-viewport {
     position: relative;
@@ -169,6 +169,41 @@ html, body {
     overflow: visible !important;
     margin-top: 8px;
     z-index: 5;
+}
+
+/* 墊在主卡片後方的兩張像素格紋卡背，暗示牌堆厚度 */
+#game-viewport::before,
+#game-viewport::after {
+    content: "";
+    position: absolute;
+    width: 90%;
+    max-width: 440px;
+    height: 540px;
+    border-radius: 18px;
+    background-color: #121613;
+    background-image: repeating-linear-gradient(
+        45deg,
+        #171d18 0px,
+        #171d18 4px,
+        #0f1310 4px,
+        #0f1310 8px
+    );
+    border: 3px solid #4a412a;
+    box-shadow:
+        inset 0 0 0 3px #090b0a,
+        inset 0 0 0 5px #2a3125,
+        0 14px 30px rgba(0, 0, 0, 0.92);
+    pointer-events: none;
+}
+
+#game-viewport::before {
+    z-index: 2;
+    transform: translate3d(-6px, 6px, 0) rotate(-2.2deg);
+}
+
+#game-viewport::after {
+    z-index: 3;
+    transform: translate3d(6px, 4px, 0) rotate(1.6deg);
 }
 
 /* =================================
@@ -189,7 +224,6 @@ html, body {
     height: 540px;
     background: #101311;
 
-    /* 像素直角＋微鏽蝕暗琥珀金屬邊框＋階梯外框與厚重懸浮陰影 */
     border-radius: 18px;
     border: 4px solid #8a7848;
     box-shadow:
@@ -197,19 +231,42 @@ html, body {
         inset 0 0 0 4px #080a09,
         0 0 0 3px #2b2618,
         0 0 0 6px #060706,
-        0 24px 48px rgba(0, 0, 0, 0.96);
+        0 20px 42px rgba(0, 0, 0, 0.96);
 
     overflow: hidden;
     display: flex;
     flex-direction: column;
 
-    cursor: pointer;
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
+    cursor: grab;
+    /* 旋轉支點設在卡片底部偏下，模擬拇指捏住卡底左右扇動 */
+    transform-origin: 50% 115%;
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease, box-shadow 0.2s ease;
     will-change: transform;
     z-index: 5;
 }
 
+/* 硬邊階梯狀像素卡面反光（無柔和漸層，保持復古銳利感） */
+.story-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 30;
+    background: linear-gradient(
+        115deg,
+        transparent 38%,
+        rgba(225, 232, 205, 0.05) 38%,
+        rgba(225, 232, 205, 0.05) 45%,
+        rgba(225, 232, 205, 0.11) 45%,
+        rgba(225, 232, 205, 0.11) 48%,
+        transparent 48%
+    );
+    transform: translateX(var(--sheen-x, -120%));
+    transition: transform 0.35s ease-out;
+}
+
+/* 抓起卡片時的浮空與加亮回饋 */
 .story-card.dragging {
     transition: none !important;
     cursor: grabbing;
@@ -219,7 +276,15 @@ html, body {
         inset 0 0 0 4px #080a09,
         0 0 0 3px #4b543b,
         0 0 0 6px #060706,
-        0 30px 60px rgba(0, 0, 0, 0.98);
+        0 34px 65px rgba(0, 0, 0, 0.98);
+}
+
+.story-card.dragging::after {
+    transition: none !important;
+}
+
+.story-card.waiting-click {
+    cursor: pointer;
 }
 
 .story-card.waiting-click:hover {
@@ -686,4 +751,53 @@ html, body {
     75%  { transform: translate3d(-3px, 2px, 0) rotate(-0.6deg); }
     90%  { transform: translate3d(3px, -1px, 0) rotate(0.4deg); }
     100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+/* =================================
+   11. 手機版響應式微調（留出卡堆邊緣與揮卡空間）
+================================= */
+@media (max-width: 480px) {
+    .game-header {
+        padding: 16px 0 8px;
+    }
+
+    .game-header h1 {
+        font-size: 17px;
+        margin-bottom: 6px;
+    }
+
+    .game-header p {
+        font-size: 11px;
+    }
+
+    #game-viewport {
+        height: 495px;
+        margin-top: 4px;
+    }
+
+    /* 卡片與後方卡堆同步縮為 82% 寬度，左右露出牌堆與環境背景 */
+    .story-card,
+    #game-viewport::before,
+    #game-viewport::after {
+        width: 82%;
+        height: 472px;
+    }
+
+    .card-content {
+        padding: 8px 12px;
+    }
+
+    .card-content h2 {
+        font-size: 14px;
+        margin-bottom: 4px;
+    }
+
+    .card-content p {
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .swipe-hint {
+        font-size: 15px;
+        padding: 10px 14px;
+    }
 }

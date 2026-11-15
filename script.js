@@ -100,12 +100,12 @@ const STORY_DATA = {
                 { speaker: "蟑螂 B", image: "images/5.png", text: "等一下……你是誰啊？" },
                 { speaker: "蟑螂 C", image: "images/7.png", text: "好大隻……" },
                 { speaker: "主角", image: "images/4.png", text: "啊……抱歉，嚇到你們了嗎？" },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "倒也不是，只是很少看到這麼大的蟑螂。" },
-                { speaker: "蟑螂 B", image: "images/5.png", text: "而且你的顏色也不太一樣，怎麼會是白色的？" },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "當然阿!很少看到這麼大的同類...\n等等...\n這算同類嗎?" },
+                { speaker: "蟑螂 B", image: "images/5.png", text: "語言相通的話就是同類吧?" },
                 { speaker: "主角", image: "images/4.png", text: "這個嘛……其實我也不太清楚。" },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "你也不知道？" },
-                { speaker: "主角", image: "images/4.png", text: "嗯……所以我才想問問你們，有沒有看過跟我一樣的情況。" },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "這樣啊。那你想知道什麼？" }
+                { speaker: "蟑螂 A", image: "images/6.png", text: "拜託~每隻昆蟲說的話都馬相通~\n只是口音不太相近而已..." },
+                { speaker: "主角", image: "images/4.png", text: "拜託了\n我真的需要你們的幫忙..." },
+                { speaker: "蟑螂 A", image: "images/6.png", text: "好吧...你想知道什麼？" }
             ],
 
             topics: [
@@ -412,7 +412,7 @@ function playSpeakerBlip(speaker) {
     } catch (e) {}
 }
 /* =================================
-   2-1B. Web Audio 紙質卡片擬音（Inscryption 風格乾燥厚紙卡手感）
+   2-1B. Web Audio 紙質卡片擬音（厚紙卡「刷—塔」悶實手感）
 ================================= */
 function playCardSound(type = "pick") {
     try {
@@ -424,31 +424,28 @@ function playCardSound(type = "pick") {
         }
 
         const now = audioCtx.currentTime;
-        // 每次操作加入 ±8% 自然隨機變化，避免聽起來像重複的電子音效
-        const jitter = 0.92 + Math.random() * 0.16;
+        const jitter = 0.93 + Math.random() * 0.14;
 
-        // 輔助函式：產生無共振峰的乾燥紙張噪音層
         const triggerPaperNoise = ({
             delay = 0,
             duration = 0.04,
-            hpFreq = 400,
-            lpStart = 1600,
-            lpEnd = 1000,
-            peakGain = 0.12,
+            hpFreq = 300,
+            lpStart = 900,
+            lpEnd = 500,
+            peakGain = 0.15,
             attack = 0.005,
-            smoothness = 0.45
+            smoothness = 0.25
         }) => {
             const startTime = now + delay;
             const bufferSize = Math.max(1, Math.floor(audioCtx.sampleRate * duration));
             const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
 
-            // 一階低通平滑雜訊，模擬紙張纖維表面而非刺耳電流聲
             let prev = 0;
             for (let i = 0; i < bufferSize; i++) {
                 const white = Math.random() * 2 - 1;
                 prev = prev + smoothness * (white - prev);
-                data[i] = prev * 1.6;
+                data[i] = prev * 1.8;
             }
 
             const src = audioCtx.createBufferSource();
@@ -461,13 +458,13 @@ function playCardSound(type = "pick") {
 
             const lp = audioCtx.createBiquadFilter();
             lp.type = "lowpass";
-            lp.Q.setValueAtTime(0.55, startTime);
+            lp.Q.setValueAtTime(0.5, startTime);
             lp.frequency.setValueAtTime(lpStart * jitter, startTime);
-            lp.frequency.exponentialRampToValueAtTime(Math.max(80, lpEnd * jitter), startTime + duration);
+            lp.frequency.exponentialRampToValueAtTime(Math.max(70, lpEnd * jitter), startTime + duration);
 
             const gain = audioCtx.createGain();
             gain.gain.setValueAtTime(0.0001, startTime);
-            gain.gain.linearRampToValueAtTime(peakGain, startTime + Math.min(attack, duration * 0.4));
+            gain.gain.linearRampToValueAtTime(peakGain, startTime + Math.min(attack, duration * 0.45));
             gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
             src.connect(hp);
@@ -480,70 +477,85 @@ function playCardSound(type = "pick") {
         };
 
         if (type === "pick") {
-            // 【拿起卡片】1. 厚紙板輕微彎曲的乾燥摩擦 + 2. 牌緣脫離卡堆的極短輕響
+            // 【拿起卡片】厚紙卡離桌的微悶摩擦
             triggerPaperNoise({
                 delay: 0,
-                duration: 0.032,
-                hpFreq: 280,
-                lpStart: 1150,
-                lpEnd: 780,
-                peakGain: 0.14,
+                duration: 0.036,
+                hpFreq: 220,
+                lpStart: 880,
+                lpEnd: 520,
+                peakGain: 0.16,
+                attack: 0.005,
+                smoothness: 0.26
+            });
+            triggerPaperNoise({
+                delay: 0.008,
+                duration: 0.02,
+                hpFreq: 550,
+                lpStart: 1350,
+                lpEnd: 820,
+                peakGain: 0.075,
                 attack: 0.004,
                 smoothness: 0.35
             });
-            triggerPaperNoise({
-                delay: 0.007,
-                duration: 0.016,
-                hpFreq: 1350,
-                lpStart: 3100,
-                lpEnd: 2200,
-                peakGain: 0.085,
-                attack: 0.002,
-                smoothness: 0.65
-            });
         } else if (type === "swipe") {
-            // 【滑開卡片】1. 牌面擦過卡堆的乾燥摩擦聲 + 2. 卡片切開空氣甩出的低頻重量感
+            // 【滑開卡片：雙音節「刷—塔」】
+            // 第一拍「刷」：霧面紙身滑過卡堆的低頻摩擦
             triggerPaperNoise({
                 delay: 0,
-                duration: 0.115,
-                hpFreq: 480,
-                lpStart: 1550,
-                lpEnd: 920,
+                duration: 0.078,
+                hpFreq: 380,
+                lpStart: 1220,
+                lpEnd: 740,
                 peakGain: 0.16,
                 attack: 0.014,
-                smoothness: 0.5
+                smoothness: 0.34
             });
+
+            // 第二拍「塔」前緣：削掉高頻的厚紙板碰撞頭音（260Hz~820Hz，帶有微黏的緩衝起音）
             triggerPaperNoise({
-                delay: 0.012,
-                duration: 0.145,
-                hpFreq: 150,
-                lpStart: 620,
-                lpEnd: 340,
-                peakGain: 0.15,
-                attack: 0.025,
-                smoothness: 0.25
+                delay: 0.072,
+                duration: 0.026,
+                hpFreq: 260,
+                lpStart: 820,
+                lpEnd: 380,
+                peakGain: 0.25,
+                attack: 0.004,
+                smoothness: 0.24
+            });
+
+            // 第二拍「塔」尾韻：厚紙貼合時的沉悶氣墊重量感
+            triggerPaperNoise({
+                delay: 0.075,
+                duration: 0.052,
+                hpFreq: 70,
+                lpStart: 300,
+                lpEnd: 120,
+                peakGain: 0.32,
+                attack: 0.006,
+                smoothness: 0.15
             });
         } else {
-            // 【放回卡堆】1. 平拍回桌面的低頻氣墊悶響 + 2. 紙邊貼齊的微弱沙沙聲
+            // 【放回卡堆】厚紙貼回桌面的沉悶拍擊
             triggerPaperNoise({
                 delay: 0,
-                duration: 0.044,
-                hpFreq: 75,
-                lpStart: 310,
-                lpEnd: 150,
-                peakGain: 0.24,
-                attack: 0.003,
-                smoothness: 0.2
+                duration: 0.048,
+                hpFreq: 70,
+                lpStart: 280,
+                lpEnd: 130,
+                peakGain: 0.26,
+                attack: 0.004,
+                smoothness: 0.18
             });
             triggerPaperNoise({
-                delay: 0.009,
-                duration: 0.026,
-                hpFreq: 750,
-                lpStart: 1850,
-                lpEnd: 1100,
-                peakGain: 0.065,
-                attack: 0.004,
-                smoothness: 0.5
+                delay: 0.01,
+                duration: 0.028,
+                hpFreq: 420,
+                lpStart: 980,
+                lpEnd: 560,
+                peakGain: 0.07,
+                attack: 0.005,
+                smoothness: 0.3
             });
         }
     } catch (e) {}

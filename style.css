@@ -791,3 +791,7 @@ html, body {
         padding: 10px 14px;
     }
 }
+.dialogue-bold {
+    font-weight: 900;
+    color: #fff3b0; /* 淡淡的暖白金強調色，不需要顏色可刪除此行 */
+}

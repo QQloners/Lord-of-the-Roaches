@@ -106,39 +106,60 @@ const gameOver = document.getElementById("game-over");
 ================================= */
 let audioCtx = null;
 
+const SPEAKER_VOICE_PROFILES = {
+    "主角": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
+    "主角（小聲碎念）": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
+    "蟑螂 A": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
+    "蟑螂 B": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
+    "蟑螂 C": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
+    "大哥": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
+    "老二": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
+    "三弟": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
+    "三隻蟑螂": {
+        voices: [
+            { freq: 460, endFreq: 490, type: "square", duration: 0.038, gain: 0.032, delay: 0 },
+            { freq: 520, endFreq: 555, type: "square", duration: 0.038, gain: 0.032, delay: 0.006 },
+            { freq: 590, endFreq: 630, type: "square", duration: 0.038, gain: 0.032, delay: 0.012 }
+        ]
+    },
+    "獨角大仙": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 }
+};
+
 function playSpeakerBlip(speaker) {
-    const baseFreq = SPEAKER_VOICE_PITCH[speaker];
-    if (!baseFreq) return;
+    if (!speaker || speaker === "旁白") return;
+
+    const profile = SPEAKER_VOICE_PROFILES[speaker];
+    if (!profile) return;
 
     try {
         if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioCtx();
         }
-        if (audioCtx.state === "suspended") {
-            audioCtx.resume();
-        }
+        if (audioCtx.state === "suspended") audioCtx.resume();
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        const filter = audioCtx.createBiquadFilter();
+        const now = audioCtx.currentTime;
+        const voiceList = profile.voices || [profile];
 
-        osc.type = "triangle";
-        const pitch = baseFreq + (Math.random() * 28 - 14);
-        osc.frequency.setValueAtTime(pitch, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.78, audioCtx.currentTime + 0.04);
+        voiceList.forEach(v => {
+            const startTime = now + (v.delay || 0);
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
 
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(680, audioCtx.currentTime);
+            osc.type = v.type;
+            osc.frequency.setValueAtTime(v.freq, startTime);
+            osc.frequency.exponentialRampToValueAtTime(v.endFreq, startTime + v.duration);
 
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.045);
+            gainNode.gain.setValueAtTime(0.001, startTime);
+            gainNode.gain.linearRampToValueAtTime(v.gain, startTime + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + v.duration);
 
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(audioCtx.destination);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
 
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.045);
+            osc.start(startTime);
+            osc.stop(startTime + v.duration + 0.005);
+        });
     } catch (e) {}
 }
 /* =================================
@@ -407,8 +428,7 @@ function renderCard() {
             typingTimer = null;
 
             card.querySelector("h2").textContent = data.title || "";
-            card.querySelector("p").textContent =
-                currentTextSegments[currentTextSegmentIndex] || "";
+            renderFormattedText(card.querySelector("p"), currentTextSegments[currentTextSegmentIndex] || "");
 
             card.querySelector("h2").classList.remove("typing-cursor");
             card.querySelector("p").classList.remove("typing-cursor");
@@ -558,7 +578,10 @@ function renderStartCard(data) {
             clearInterval(typingTimer);
             typingTimer = null;
             titleEl.textContent = data.title || "";
-            descEl.textContent = currentLineText;
+            renderFormattedText(descEl, currentLineText);
+
+            titleEl.classList.remove("typing-cursor");
+            descEl.classList.remove("typing-cursor");
             titleEl.classList.remove("typing-cursor");
             descEl.classList.remove("typing-cursor");
             portraitEl.classList.remove("is-talking");
@@ -760,17 +783,72 @@ function triggerAwakeAnimation(card, data) {
     }, 850);
 }
 
+/* 粗體標記（**文字**）解析與渲染工具 */
+function parseFormattedTokens(text) {
+    const str = String(text || "");
+    const tokens = [];
+    let isBold = false;
+    let i = 0;
+
+    while (i < str.length) {
+        if (str[i] === "*" && str[i + 1] === "*") {
+            isBold = !isBold;
+            i += 2;
+            continue;
+        }
+        tokens.push({ char: str[i], bold: isBold });
+        i++;
+    }
+    return tokens;
+}
+
+function escapeHtmlChar(ch) {
+    if (ch === "&") return "&amp;";
+    if (ch === "<") return "&lt;";
+    if (ch === ">") return "&gt;";
+    return ch;
+}
+
+function tokensToHtml(tokens) {
+    let html = "";
+    let inBoldTag = false;
+
+    for (let i = 0; i < tokens.length; i++) {
+        const { char, bold } = tokens[i];
+        if (bold && !inBoldTag) {
+            html += '<strong class="dialogue-bold">';
+            inBoldTag = true;
+        } else if (!bold && inBoldTag) {
+            html += "</strong>";
+            inBoldTag = false;
+        }
+        html += escapeHtmlChar(char);
+    }
+
+    if (inBoldTag) {
+        html += "</strong>";
+    }
+    return html;
+}
+
+function renderFormattedText(element, text) {
+    if (!element) return;
+    const tokens = parseFormattedTokens(text);
+    element.innerHTML = tokensToHtml(tokens);
+}
+
 /* 通用打字機函式 */
 function typeText(element, text, speed, onComplete, onChar) {
+    const tokens = parseFormattedTokens(text);
     let index = 0;
-    element.textContent = "";
+    element.innerHTML = "";
     element.classList.add("typing-cursor");
 
     typingTimer = setInterval(() => {
-        if (index < text.length) {
-            const ch = text.charAt(index);
-            element.textContent += ch;
-            if (onChar) onChar(ch, index);
+        if (index < tokens.length) {
+            const currentToken = tokens[index];
+            element.innerHTML = tokensToHtml(tokens.slice(0, index + 1));
+            if (onChar) onChar(currentToken.char, index);
             index++;
         } else {
             clearInterval(typingTimer);
@@ -780,7 +858,6 @@ function typeText(element, text, speed, onComplete, onChar) {
         }
     }, speed);
 }
-
 
 
 /* =================================

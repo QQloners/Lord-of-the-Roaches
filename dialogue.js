@@ -236,6 +236,7 @@ const STORY_DATA = {
                             { speaker: "主角", image: "images/4.png", text: "這個**比武大會**跟我變回人類有什麼關係?" },
                             { speaker: "老二", image: "images/5.png", text: "哈!\n你還真問到重點了!\n這也是為何我認為這是故......" },
                             { speaker: "三弟", image: "images/7.png", text: "聽說第一名成為**王**的人可以**許願**!" },
+                            { speaker: "主角", image: "images/4.png", text: "我能理解為何大哥跟二哥不相信了...\n但..." },
                         ]
                     },
                     right: {

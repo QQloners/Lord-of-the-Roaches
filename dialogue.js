@@ -190,6 +190,7 @@ const STORY_DATA = {
                     left: {
                         label: "比武大會?",
                         steps: [
+                            { speaker: "主角", image: "images/4.png", text: "比武大會?" },
                             { speaker: "三弟", image: "images/7.png", text: "沒錯！\n那可是一場盛事!" },
                             { speaker: "大哥", image: "images/6.png", text: "其實是我們長老很愛提起的故事...\n一場昆蟲界的榮耀決鬥..." },
                             { speaker: "老二", image: "images/5.png", text: "反正我是不太信...\n就算是真的也輪不到蟑螂去\n你到不如跟我們一起走" },

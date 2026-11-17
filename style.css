@@ -171,7 +171,7 @@ html, body {
     z-index: 5;
 }
 
-/* 墊在主卡片後方的兩張舊化厚紙卡背（暖褐牛皮紙色調＋像素斜紋） */
+/* 墊在主卡片後方的兩張底牌（套用新版羊皮紙王冠圖） */
 #game-viewport::before,
 #game-viewport::after {
     content: "";
@@ -181,18 +181,13 @@ html, body {
     height: 540px;
     border-radius: 18px;
     background-color: #171410;
-    background-image: repeating-linear-gradient(
-        45deg,
-        #1e1a14 0px,
-        #1e1a14 4px,
-        #14110d 4px,
-        #14110d 8px
-    );
-    border: 3px solid #574933;
-    box-shadow:
-        inset 0 0 0 3px #0c0a08,
-        inset 0 0 0 5px #332a1d,
-        0 14px 30px rgba(0, 0, 0, 0.92);
+    background-image: url("images/card_base.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+    border: none;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.92);
     pointer-events: none;
 }
 
@@ -205,7 +200,6 @@ html, body {
     z-index: 3;
     transform: translate3d(6px, 4px, 0) rotate(1.6deg);
 }
-
 /* =================================
    4. 霧面厚紙卡風格邊框（Paper Cardstock）
 ================================= */
@@ -801,100 +795,123 @@ html, body {
 ================================= */
 .title-deck-wrapper {
     position: relative;
+    z-index: 30;
     width: 100%;
     height: 100%;
-    perspective: 1100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* 洗牌用的背景假牌 */
+/* 洗牌用的背景假牌（套用專屬卡背圖） */
 .shuffle-dummy-card {
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background-color: #0b0b0d;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 0);
-    background-size: 4px 4px;
+    left: 50%;
+    top: 50%;
+    margin: 0;
+    background-color: #141013;
+    background-image: url("images/card_back.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
     border: 2px solid #cbb68c;
-    box-shadow:
-        inset 0 0 0 4px #0b0b0d,
-        inset 0 0 0 5px rgba(203, 182, 140, 0.55),
-        0 10px 25px rgba(0, 0, 0, 0.75);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
     pointer-events: none;
     z-index: 1;
 }
 
 .shuffle-dummy-card.shuffle-left {
-    animation: cardShuffleLeft 0.32s cubic-bezier(0.35, 0, 0.25, 1) forwards;
+    animation: cardShuffleLeft 0.34s cubic-bezier(0.35, 0, 0.25, 1) forwards;
 }
 
 .shuffle-dummy-card.shuffle-right {
-    animation: cardShuffleRight 0.32s cubic-bezier(0.35, 0, 0.25, 1) forwards;
+    animation: cardShuffleRight 0.34s cubic-bezier(0.35, 0, 0.25, 1) forwards;
 }
 
 @keyframes cardShuffleLeft {
-    0%   { transform: translate3d(0, 0, 0) rotate(0deg); z-index: 1; }
-    45%  { transform: translate3d(-46%, -6px, 0) rotate(-9deg); z-index: 4; }
-    100% { transform: translate3d(-4px, 2px, 0) rotate(-1.5deg); z-index: 2; }
+    0%   { transform: translate3d(-50%, -50%, 0) rotate(0deg); z-index: 1; }
+    45%  { transform: translate3d(calc(-50% - 42%), calc(-50% - 6px), 0) rotate(-8deg); z-index: 6; }
+    100% { transform: translate3d(-50%, -50%, 0) rotate(0deg); z-index: 2; }
 }
 
 @keyframes cardShuffleRight {
-    0%   { transform: translate3d(0, 0, 0) rotate(0deg); z-index: 1; }
-    45%  { transform: translate3d(46%, -6px, 0) rotate(9deg); z-index: 4; }
-    100% { transform: translate3d(4px, 2px, 0) rotate(1.5deg); z-index: 2; }
+    0%   { transform: translate3d(-50%, -50%, 0) rotate(0deg); z-index: 1; }
+    45%  { transform: translate3d(calc(-50% + 42%), calc(-50% - 6px), 0) rotate(8deg); z-index: 6; }
+    100% { transform: translate3d(-50%, -50%, 0) rotate(0deg); z-index: 2; }
 }
 
-/* 主卡片翻轉進場 */
+/* 主選單卡片（自動置中於牌堆正上方） */
 .title-main-card {
+    position: relative;
+    margin: 0;
     z-index: 5;
     transform-style: preserve-3d;
-    background-color: #0b0b0d;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 0);
-    background-size: 4px 4px;
+    background-color: #181117;
 }
 
+/* 進場翻牌 */
 .title-main-card.is-flipping {
     animation: titleCardFlipReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes titleCardFlipReveal {
-    0%   { transform: rotateY(180deg) scale(0.96); }
-    50%  { transform: rotateY(90deg) scale(1.04); }
-    100% { transform: rotateY(0deg) scale(1); }
+    0%   { transform: perspective(1100px) rotateY(180deg) scale(0.96); }
+    50%  { transform: perspective(1100px) rotateY(90deg) scale(1.04); }
+    100% { transform: perspective(1100px) rotateY(0deg) scale(1); }
 }
 
-/* 卡背裝飾（翻牌前顯示） */
+/* 開始遊戲：原地轉一圈（前半圈 0° -> 180°） */
+.title-main-card.is-spin-out {
+    animation: titleSpinFirstHalf 0.32s ease-in forwards;
+}
+
+@keyframes titleSpinFirstHalf {
+    0%   { transform: perspective(1100px) rotateY(0deg) scale(1); }
+    100% { transform: perspective(1100px) rotateY(180deg) scale(1.04); }
+}
+
+/* 開始遊戲：原地轉一圈（後半圈 180° -> 360° 翻開第一幕） */
+.story-card.is-spin-in {
+    animation: titleSpinSecondHalf 0.34s ease-out forwards;
+}
+
+@keyframes titleSpinSecondHalf {
+    0%   { transform: perspective(1100px) rotateY(180deg) scale(1.04); }
+    100% { transform: perspective(1100px) rotateY(360deg) scale(1); }
+}
+
+/* 卡背圖案（翻牌前與點擊開始遊戲旋轉過場共用） */
 .title-card-back {
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    color: rgba(218, 198, 154, 0.45);
-    letter-spacing: 3px;
-    font-size: 0.85rem;
+    border-radius: inherit;
+    background-color: #141013;
+    background-image: url("images/card_back.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
     user-select: none;
 }
 
-.title-card-back .crest-diamond {
-    width: 22px;
-    height: 22px;
-    border: 2px solid rgba(218, 198, 154, 0.5);
-    transform: rotate(45deg);
-    margin-bottom: 6px;
-}
-
-/* 卡面正面的主選單排版 */
+/* 卡面正面：「蟑螂王」王座主選單背景 */
 .title-menu-face {
     width: 100%;
     height: 100%;
+    border-radius: inherit;
+    background-color: #181117;
+    background-image: url("images/menu_bg.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 28px 22px 24px;
+    justify-content: flex-end;
+    padding: 18px 26px 28px;
     box-sizing: border-box;
-    animation: menuFadeIn 0.28s ease-out;
+    animation: menuFadeIn 0.25s ease-out;
 }
 
 @keyframes menuFadeIn {
@@ -902,79 +919,122 @@ html, body {
     to   { opacity: 1; }
 }
 
-.title-menu-header {
-    text-align: center;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(203, 182, 140, 0.25);
-}
-
-.title-menu-header .menu-badge {
-    font-size: 0.72rem;
-    letter-spacing: 3px;
-    color: #9e9585;
-    margin-bottom: 6px;
-}
-
-.title-menu-header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    letter-spacing: 2px;
-    color: #edd59e;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-}
-
 .title-menu-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    margin: auto 0;
+    gap: 11px;
+    width: 100%;
 }
 
+/* 金色雕花牌匾按鈕（三欄對稱：左圖示、中文字、右留白平衡） */
 .menu-btn {
     position: relative;
+    box-sizing: border-box;
     width: 100%;
-    padding: 13px 16px;
-    background: rgba(22, 22, 26, 0.92);
-    border: 1px solid rgba(203, 182, 140, 0.55);
-    border-radius: 6px;
-    color: #f0ece1;
+    height: 46px;
+    padding: 0 18px;
+    background: #261e25;
+    border: 2px solid #e2b153;
+    border-radius: 10px;
+    box-shadow:
+        0 0 0 2px #140e13,
+        inset 0 0 0 2px #3b2d38,
+        0 4px 10px rgba(0, 0, 0, 0.75);
+    color: #f3dfb9;
     font-family: inherit;
-    font-size: 0.98rem;
-    letter-spacing: 2px;
+    font-size: 1.02rem;
+    font-weight: bold;
+    letter-spacing: 3px;
     cursor: pointer;
-    display: flex;
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
     align-items: center;
-    justify-content: space-between;
-    transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+    text-align: center;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 
+/* 左右兩側金色雕花耳飾 */
+.menu-btn::before,
+.menu-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 14px;
+    background: #e2b153;
+    border: 2px solid #140e13;
+    transform: translateY(-50%);
+}
+
+.menu-btn::before {
+    left: -5px;
+    border-radius: 4px 0 0 4px;
+}
+
+.menu-btn::after {
+    right: -5px;
+    border-radius: 0 4px 4px 0;
+}
+
+.menu-btn .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #e8b95a;
+}
+
+/* 迷你像素王冠指示器 */
+.menu-btn .btn-crown {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    line-height: 1;
+    color: #f7cc6b;
+    text-shadow: 0 2px 0 #140e13, 0 -1px 0 #140e13, 1px 0 0 #140e13, -1px 0 0 #140e13;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* 高亮／Hover 狀態（深緋紅底色＋頂部小王冠） */
+.menu-btn.is-active:not(.is-locked),
 .menu-btn:hover:not(.is-locked),
 .menu-btn:focus-visible:not(.is-locked) {
-    background: rgba(45, 40, 28, 0.95);
-    border-color: #f3d078;
-    color: #ffe39b;
-    transform: translateY(-2px);
+    background: #7c2129;
+    border-color: #f7cf73;
+    box-shadow:
+        0 0 0 2px #140e13,
+        inset 0 0 0 2px #a3323c,
+        0 6px 14px rgba(0, 0, 0, 0.85);
+    color: #fff2d6;
+    transform: translateY(-1px);
     outline: none;
 }
 
+.menu-btn.is-active:not(.is-locked) .btn-crown,
+.menu-btn:hover:not(.is-locked) .btn-crown,
+.menu-btn:focus-visible:not(.is-locked) .btn-crown {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-1px);
+}
+
 .menu-btn:active:not(.is-locked) {
-    transform: translateY(0) scale(0.98);
+    transform: translateY(1px) scale(0.98);
 }
 
-.menu-btn .btn-tag {
-    font-size: 0.7rem;
-    letter-spacing: 1px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #8f8a80;
-}
-
-/* 尚未開放的按鈕（繼續遊戲） */
+/* 鎖定狀態（繼續遊戲） */
 .menu-btn.is-locked {
-    opacity: 0.5;
+    background: #231c22;
+    border-color: #9e7f47;
+    color: #7d7378;
     cursor: not-allowed;
-    border-style: dashed;
+}
+
+.menu-btn.is-locked .btn-icon {
+    color: #7d7378;
 }
 
 .menu-btn.shake-deny {
@@ -989,33 +1049,39 @@ html, body {
 
 .title-menu-footer {
     text-align: center;
-    font-size: 0.74rem;
-    color: #7d786e;
+    font-size: 0.72rem;
+    color: #e2b153;
+    text-shadow: 0 1px 3px #000;
     letter-spacing: 1px;
-    min-height: 1.2em;
+    margin-top: 8px;
+    min-height: 1.1em;
 }
 
 /* 設定預留子畫面 */
 .settings-slot-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin: auto 0;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 12px;
 }
 
 .settings-slot-item {
-    padding: 12px 14px;
-    border: 1px solid rgba(203, 182, 140, 0.3);
-    border-radius: 6px;
-    background: rgba(18, 18, 22, 0.85);
+    padding: 11px 14px;
+    border: 2px solid #9e7f47;
+    border-radius: 8px;
+    background: rgba(30, 22, 29, 0.94);
+    box-shadow: 0 0 0 2px #140e13;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     font-size: 0.88rem;
-    color: #cfc9bc;
+    color: #f3dfb9;
 }
 
 .settings-slot-item span.slot-status {
     font-size: 0.72rem;
-    color: #8c8578;
+    color: #cbb68c;
+    white-space: nowrap;
 }

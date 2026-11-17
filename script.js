@@ -1124,6 +1124,10 @@ function restartGame() {
 /* =================================
    8. 首頁選單（洗牌 -> 翻牌 -> 選單）
 ================================= */
+function getCardBackHTML() {
+    return `<div class="title-card-back"></div>`;
+}
+
 function renderTitleMenu() {
     gameOver.hidden = true;
     isAnimating = true;
@@ -1141,28 +1145,25 @@ function renderTitleMenu() {
     const wrapper = document.createElement("div");
     wrapper.className = "title-deck-wrapper";
 
-    // 主卡片（初始為卡背狀態）
+    // 主卡片（初始為卡背狀態，置中於牌堆）
     const mainCard = document.createElement("div");
     mainCard.className = "story-card title-main-card";
-    mainCard.innerHTML = `
-        <div class="title-card-back">
-            <div class="crest-diamond"></div>
-            <span>SHUFFLING</span>
-        </div>
-    `;
+    mainCard.innerHTML = getCardBackHTML();
 
     wrapper.appendChild(mainCard);
     viewport.appendChild(wrapper);
 
-    // 執行 3 次左右洗牌動畫
+    // 執行 3 次左右洗牌動畫（假牌尺寸與主卡片完全一致）
     const shuffleDirections = ["shuffle-left", "shuffle-right", "shuffle-left"];
     shuffleDirections.forEach((dirClass, idx) => {
         setTimeout(() => {
             if (typeof playCardSound === "function") playCardSound("pick");
             const dummy = document.createElement("div");
-            dummy.className = `shuffle-dummy-card ${dirClass}`;
+            dummy.className = `story-card shuffle-dummy-card ${dirClass}`;
+            dummy.style.width = `${mainCard.offsetWidth}px`;
+            dummy.style.height = `${mainCard.offsetHeight}px`;
             wrapper.appendChild(dummy);
-            setTimeout(() => dummy.remove(), 340);
+            setTimeout(() => dummy.remove(), 360);
         }, idx * 240);
     });
 
@@ -1171,7 +1172,6 @@ function renderTitleMenu() {
         if (typeof playCardSound === "function") playCardSound("return");
         mainCard.classList.add("is-flipping");
 
-        // 翻轉到 90 度（卡片側邊瞬間）切換成正面選單內容
         setTimeout(() => {
             showMainMenuFace(mainCard);
         }, 310);
@@ -1186,29 +1186,25 @@ function renderTitleMenu() {
 function showMainMenuFace(card) {
     card.innerHTML = `
         <div class="title-menu-face">
-            <div class="title-menu-header">
-                <div class="menu-badge">TITLE MENU</div>
-                <h2>命運之牌</h2>
-            </div>
-
             <div class="title-menu-list">
-                <button type="button" class="menu-btn" id="btn-menu-start">
-                    <span>▶ 開始遊戲</span>
-                    <span class="btn-tag">第一章</span>
+                <button type="button" class="menu-btn is-active" id="btn-menu-start">
+                    <span class="btn-crown">♛</span>
+                    <span class="btn-icon">▶</span>
+                    <span>開始遊戲</span>
                 </button>
 
                 <button type="button" class="menu-btn is-locked" id="btn-menu-continue">
-                    <span>◈ 繼續遊戲</span>
-                    <span class="btn-tag">尚無存檔</span>
+                    <span class="btn-icon">🕒</span>
+                    <span>繼續遊戲</span>
                 </button>
 
                 <button type="button" class="menu-btn" id="btn-menu-settings">
-                    <span>⚙ 設定</span>
-                    <span class="btn-tag">音效 / 音樂</span>
+                    <span class="btn-crown">♛</span>
+                    <span class="btn-icon">⚙</span>
+                    <span>設定</span>
                 </button>
             </div>
-
-            <div class="title-menu-footer" id="title-menu-tip">點擊選項以開始</div>
+            <div class="title-menu-footer" id="title-menu-tip"></div>
         </div>
     `;
 
@@ -1217,31 +1213,68 @@ function showMainMenuFace(card) {
     const settingsBtn = card.querySelector("#btn-menu-settings");
     const tipEl = card.querySelector("#title-menu-tip");
 
-    // 1. 開始遊戲 -> 滑出卡片並進入第一幕（醒來）
+    // 讓小王冠隨著滑鼠移入自動切換高亮按鈕
+    [startBtn, settingsBtn].forEach(btn => {
+        btn.addEventListener("mouseenter", () => {
+            startBtn.classList.remove("is-active");
+            settingsBtn.classList.remove("is-active");
+            btn.classList.add("is-active");
+        });
+    });
+
+    // 1. 開始遊戲 -> 原地旋轉 360° 翻開進入第一幕（醒來）
     startBtn.addEventListener("click", () => {
         if (isAnimating) return;
         isAnimating = true;
         if (typeof playCardSound === "function") playCardSound("swipe");
 
-        card.style.transition = "transform 0.42s cubic-bezier(0.4, 0, 1, 1), opacity 0.35s ease";
-        card.style.transform = `translate3d(${window.innerWidth * 0.8}px, 0, 0) rotate(18deg)`;
-        card.style.opacity = "0";
+        card.classList.add("is-spin-out");
+
+        setTimeout(() => {
+            card.innerHTML = getCardBackHTML();
+        }, 160);
 
         setTimeout(() => {
             currentCardId = "start";
             renderCard();
-        }, 400);
+
+            const firstSceneCard = viewport.querySelector(".story-card");
+            if (firstSceneCard) {
+                isAnimating = true;
+                const wakeHint = firstSceneCard.querySelector(".wake-hint");
+                if (wakeHint) wakeHint.style.visibility = "hidden";
+
+                const tempBack = document.createElement("div");
+                tempBack.className = "title-card-back";
+                tempBack.style.position = "absolute";
+                tempBack.style.inset = "0";
+                tempBack.style.zIndex = "10";
+                firstSceneCard.appendChild(tempBack);
+
+                firstSceneCard.classList.add("is-spin-in");
+
+                setTimeout(() => {
+                    tempBack.remove();
+                    if (wakeHint) wakeHint.style.visibility = "visible";
+                }, 170);
+
+                setTimeout(() => {
+                    firstSceneCard.classList.remove("is-spin-in");
+                    isAnimating = false;
+                }, 350);
+            }
+        }, 320);
     });
 
-    // 2. 繼續遊戲 -> 預留存檔提示
+    // 2. 繼續遊戲 -> 鎖定搖晃提示
     continueBtn.addEventListener("click", () => {
         continueBtn.classList.remove("shake-deny");
         void continueBtn.offsetWidth;
         continueBtn.classList.add("shake-deny");
-        tipEl.textContent = "存檔系統將於後續版本新增";
+        tipEl.textContent = "尚無存檔紀錄";
     });
 
-    // 3. 設定 -> 切換至設定預留面板
+    // 3. 設定 -> 切換至設定面板
     settingsBtn.addEventListener("click", () => {
         if (typeof playCardSound === "function") playCardSound("pick");
         showSettingsPlaceholderFace(card);
@@ -1259,11 +1292,11 @@ function showSettingsPlaceholderFace(card) {
             <div class="settings-slot-list">
                 <div class="settings-slot-item">
                     <span>🔊 字幕聲音</span>
-                    <span class="slot-status">[ 預留欄位・預設開啟 ]</span>
+                    <span class="slot-status">[ 預留・開啟 ]</span>
                 </div>
                 <div class="settings-slot-item">
                     <span>🎵 背景音樂</span>
-                    <span class="slot-status">[ 預留欄位・尚未實裝 ]</span>
+                    <span class="slot-status">[ 預留・未實裝 ]</span>
                 </div>
             </div>
 

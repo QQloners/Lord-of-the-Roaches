@@ -23,6 +23,12 @@ function initAmbientDust() {
     }
 }
 
+function getActiveStory() {
+    if (currentLanguage === "en" && typeof STORY_DATA_EN !== "undefined") {
+        return STORY_DATA_EN;
+    }
+    return STORY_DATA;
+}
 
 
 
@@ -42,12 +48,16 @@ let typingTimer = null;
 let currentDialogueIndex = 0;
 let currentDialogueFlow = null;
 
-// 對話角色特寫圖預設對照
+// 對話角色特寫圖預設對照（中英並存）
 const DIALOGUE_SPEAKER_IMAGES = {
     "主角": "images/4.png",
     "蟑螂 A": "images/6.png",
     "蟑螂 B": "images/5.png",
-    "蟑螂 C": "images/7.png"
+    "蟑螂 C": "images/7.png",
+    "Protagonist": "images/4.png",
+    "Roach A": "images/6.png",
+    "Roach B": "images/5.png",
+    "Roach C": "images/7.png"
 };
 
 // 各角色說話音效基礎音高（Hz）
@@ -55,7 +65,11 @@ const SPEAKER_VOICE_PITCH = {
     "主角": 135,
     "蟑螂 A": 195,
     "蟑螂 B": 165,
-    "蟑螂 C": 240
+    "蟑螂 C": 240,
+    "Protagonist": 135,
+    "Roach A": 195,
+    "Roach B": 165,
+    "Roach C": 240
 };
 
 // 預先載入角色圖片並自動偵測是否為左右並排圖
@@ -107,6 +121,7 @@ const gameOver = document.getElementById("game-over");
 let audioCtx = null;
 
 const SPEAKER_VOICE_PROFILES = {
+    // --- 中文稱謂 ---
     "主角": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
     "主角（小聲碎念）": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
     "蟑螂 A": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
@@ -122,7 +137,25 @@ const SPEAKER_VOICE_PROFILES = {
             { freq: 590, endFreq: 630, type: "square", duration: 0.038, gain: 0.032, delay: 0.012 }
         ]
     },
-    "獨角大仙": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 }
+    "獨角大仙": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 },
+
+    // --- 英文稱謂（需與 dialogue_en.js 的 speaker 完全一致） ---
+    "Protagonist": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
+    "Protagonist (Muttering)": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
+    "Roach A": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
+    "Roach B": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
+    "Roach C": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
+    "Big Bro": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
+    "Second Bro": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
+    "Little Bro": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
+    "Three Roaches": {
+        voices: [
+            { freq: 460, endFreq: 490, type: "square", duration: 0.038, gain: 0.032, delay: 0 },
+            { freq: 520, endFreq: 555, type: "square", duration: 0.038, gain: 0.032, delay: 0.006 },
+            { freq: 590, endFreq: 630, type: "square", duration: 0.038, gain: 0.032, delay: 0.012 }
+        ]
+    },
+    "Master Rhinoceros": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 }
 };
 
 function playSpeakerBlip(speaker) {
@@ -337,7 +370,7 @@ function bindDialogPressFeedback(card) {
    3. 核心卡片渲染 renderCard()
 ================================= */
 function renderCard() {
-    const data = STORY_DATA[currentCardId];
+    const data = getActiveStory()[currentCardId];
     if (!data) return;
 
     if (!data.dialogueFlow) currentDialogueFlow = null;
@@ -384,7 +417,7 @@ function renderCard() {
             <div class="dialogue-portrait"></div>
             <span>[ 像素圖片區域 ]</span>
         </div>
-        <div class="wake-hint">（醒來）</div>
+        <div class="wake-hint">${getText("wakeHint")}</div>
         <div class="card-content">
             <h2></h2>
             <p></p>
@@ -878,7 +911,7 @@ function renderEndingFlow(data) {
             <h2></h2>
             <p></p>
         </div>
-        <div class="tear-hint" style="display:none;">✂️ 向下滑動撕下卡片</div>
+        <div class="tear-hint" style="display:none;">${getText("tearHint")}</div>
     `;
 
     viewport.appendChild(card);
@@ -963,7 +996,7 @@ function canUseSwipe() {
                currentDialogueFlow.mode === "final-choice";
     }
 
-    const data = STORY_DATA[currentCardId];
+    const data = getActiveStory()[currentCardId];
     if (!data || data.ending) return false;
 
     if (currentTextSegments.length > 0 &&
@@ -1072,12 +1105,13 @@ function makeChoice(direction) {
         return;
     }
 
-    const data = STORY_DATA[currentCardId];
+    const story = getActiveStory();
+    const data = story[currentCardId];
     if (!data || data.ending) return;
 
     const choiceSource = data.decision || data;
     const selectedChoice = choiceSource[direction];
-    if (!selectedChoice || !STORY_DATA[selectedChoice.next]) return;
+    if (!selectedChoice || !story[selectedChoice.next]) return;
 
     isAnimating = true;
     if (typeof playCardSound === "function") playCardSound("swipe");
@@ -1122,8 +1156,71 @@ function restartGame() {
 }
 
 /* =================================
-   8. 首頁選單（洗牌 -> 翻牌 -> 選單）
+   8. 首頁選單（洗牌 -> 翻牌 -> 選單 -> 多語系切換）
 ================================= */
+let currentLanguage = localStorage.getItem("roach_lang") || "zh";
+
+const UI_TEXT = {
+    zh: {
+        gameTitle: "蟑螂王",
+        chapterMenu: "— 主選單 —",
+        startGame: "開始遊戲",
+        continueGame: "繼續遊戲",
+        settings: "設定",
+        noSaveTip: "尚無存檔紀錄",
+        settingsHeader: "— 遊戲設定 —",
+        textSound: "🔊 字幕聲音",
+        textSoundStatus: "[ 預留・開啟 ]",
+        bgm: "🎵 背景音樂",
+        bgmStatus: "[ 預留・未實裝 ]",
+        languageLabel: "🌐 語言",
+        backToMenu: "返回選單",
+        wakeHint: "（醒來）",
+        tearHint: "✂️ 向下滑動撕下卡片"
+    },
+    en: {
+        gameTitle: "King of Cockroach",
+        chapterMenu: "— MAIN MENU —",
+        startGame: "Start Game",
+        continueGame: "Continue",
+        settings: "Settings",
+        noSaveTip: "No save data found",
+        settingsHeader: "— SETTINGS —",
+        textSound: "🔊 Text Sound",
+        textSoundStatus: "[Reserved·ON]",
+        bgm: "🎵 Music",
+        bgmStatus: "[Reserved·N/A]",
+        languageLabel: "🌐 Language",
+        backToMenu: "Back to Menu",
+        wakeHint: "(Wake up)",
+        tearHint: "✂️ Swipe down to tear card"
+    }
+};
+
+function getText(key) {
+    const dict = UI_TEXT[currentLanguage] || UI_TEXT.zh;
+    return dict[key] || UI_TEXT.zh[key] || "";
+}
+
+function applyLanguageUI() {
+    // 1. 更新網頁頂部 <h1> 主標題
+    const headerTitle = document.querySelector(".game-header h1");
+    if (headerTitle) {
+        headerTitle.textContent = getText("gameTitle");
+    }
+
+    // 2. 若目前停留在主選單／設定畫面，同步更新頂部章節副標題與卡片背景圖
+    if (viewport.querySelector(".title-deck-wrapper")) {
+        if (chapterName) {
+            chapterName.textContent = getText("chapterMenu");
+        }
+        const menuFace = document.querySelector(".title-menu-face");
+        if (menuFace) {
+            menuFace.classList.toggle("lang-en", currentLanguage === "en");
+        }
+    }
+}
+
 function getCardBackHTML() {
     return `<div class="title-card-back"></div>`;
 }
@@ -1136,8 +1233,9 @@ function renderTitleMenu() {
     startSequenceComplete = false;
     currentDialogueFlow = null;
 
+    applyLanguageUI();
     if (chapterName) {
-        chapterName.textContent = "— 主選單 —";
+        chapterName.textContent = getText("chapterMenu");
     }
 
     viewport.innerHTML = "";
@@ -1184,24 +1282,26 @@ function renderTitleMenu() {
 }
 
 function showMainMenuFace(card) {
+    const langClass = currentLanguage === "en" ? "lang-en" : "";
+
     card.innerHTML = `
-        <div class="title-menu-face">
+        <div class="title-menu-face ${langClass}">
             <div class="title-menu-list">
                 <button type="button" class="menu-btn is-active" id="btn-menu-start">
                     <span class="btn-crown">♛</span>
                     <span class="btn-icon">▶</span>
-                    <span>開始遊戲</span>
+                    <span>${getText("startGame")}</span>
                 </button>
 
                 <button type="button" class="menu-btn is-locked" id="btn-menu-continue">
                     <span class="btn-icon">🕒</span>
-                    <span>繼續遊戲</span>
+                    <span>${getText("continueGame")}</span>
                 </button>
 
                 <button type="button" class="menu-btn" id="btn-menu-settings">
                     <span class="btn-crown">♛</span>
                     <span class="btn-icon">⚙</span>
-                    <span>設定</span>
+                    <span>${getText("settings")}</span>
                 </button>
             </div>
             <div class="title-menu-footer" id="title-menu-tip"></div>
@@ -1213,7 +1313,6 @@ function showMainMenuFace(card) {
     const settingsBtn = card.querySelector("#btn-menu-settings");
     const tipEl = card.querySelector("#title-menu-tip");
 
-    // 讓小王冠隨著滑鼠移入自動切換高亮按鈕
     [startBtn, settingsBtn].forEach(btn => {
         btn.addEventListener("mouseenter", () => {
             startBtn.classList.remove("is-active");
@@ -1271,7 +1370,7 @@ function showMainMenuFace(card) {
         continueBtn.classList.remove("shake-deny");
         void continueBtn.offsetWidth;
         continueBtn.classList.add("shake-deny");
-        tipEl.textContent = "尚無存檔紀錄";
+        tipEl.textContent = getText("noSaveTip");
     });
 
     // 3. 設定 -> 切換至設定面板
@@ -1282,29 +1381,56 @@ function showMainMenuFace(card) {
 }
 
 function showSettingsPlaceholderFace(card) {
+    const langClass = currentLanguage === "en" ? "lang-en" : "";
+
     card.innerHTML = `
-        <div class="title-menu-face">
-            <div class="title-menu-header">
-                <div class="menu-badge">SETTINGS</div>
-                <h2>遊戲設定</h2>
-            </div>
+        <div class="title-menu-face ${langClass}">
+            <div class="settings-section-label">${getText("settingsHeader")}</div>
 
             <div class="settings-slot-list">
                 <div class="settings-slot-item">
-                    <span>🔊 字幕聲音</span>
-                    <span class="slot-status">[ 預留・開啟 ]</span>
+                    <span>${getText("textSound")}</span>
+                    <span class="slot-status">${getText("textSoundStatus")}</span>
                 </div>
                 <div class="settings-slot-item">
-                    <span>🎵 背景音樂</span>
-                    <span class="slot-status">[ 預留・未實裝 ]</span>
+                    <span>${getText("bgm")}</span>
+                    <span class="slot-status">${getText("bgmStatus")}</span>
+                </div>
+                <div class="settings-slot-item">
+                    <span>${getText("languageLabel")}</span>
+                    <div class="lang-toggle-group" role="group" aria-label="Language">
+                        <button type="button" class="lang-option-btn ${currentLanguage === "zh" ? "is-selected" : ""}" data-lang="zh">中文</button>
+                        <button type="button" class="lang-option-btn ${currentLanguage === "en" ? "is-selected" : ""}" data-lang="en">English</button>
+                    </div>
                 </div>
             </div>
 
-            <button type="button" class="menu-btn" id="btn-settings-back">
-                <span>← 返回選單</span>
+            <button type="button" class="menu-btn is-active" id="btn-settings-back">
+                <span class="btn-icon">←</span>
+                <span>${getText("backToMenu")}</span>
+                <span></span>
             </button>
+
+            <div class="title-menu-footer"></div>
         </div>
     `;
+
+    // 語言切換按鈕互動：即時更新標題、背景圖並重繪設定面板文字
+    const langButtons = card.querySelectorAll(".lang-option-btn");
+    langButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const selectedLang = btn.dataset.lang;
+            if (selectedLang === currentLanguage) return;
+
+            currentLanguage = selectedLang;
+            localStorage.setItem("roach_lang", currentLanguage);
+
+            if (typeof playCardSound === "function") playCardSound("pick");
+
+            applyLanguageUI();
+            showSettingsPlaceholderFace(card);
+        });
+    });
 
     card.querySelector("#btn-settings-back").addEventListener("click", () => {
         if (typeof playCardSound === "function") playCardSound("pick");
@@ -1312,5 +1438,6 @@ function showSettingsPlaceholderFace(card) {
     });
 }
 
+applyLanguageUI();
 initAmbientDust();
 renderTitleMenu();

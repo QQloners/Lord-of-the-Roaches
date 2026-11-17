@@ -896,6 +896,7 @@ html, body {
 }
 
 /* 卡面正面：「蟑螂王」王座主選單背景 */
+/* 卡面正面：中文版「蟑螂王」王座主選單背景 */
 .title-menu-face {
     width: 100%;
     height: 100%;
@@ -912,6 +913,17 @@ html, body {
     padding: 18px 26px 28px;
     box-sizing: border-box;
     animation: menuFadeIn 0.25s ease-out;
+}
+
+/* 英文版「KING OF COCKROACH」王座主選單背景 */
+/* 英文版「KING OF COCKROACH」王座主選單背景 */
+.title-menu-face.lang-en {
+    background-image: url("images/menu_bg_en.png");
+}
+
+.title-menu-face.lang-en .menu-btn {
+    letter-spacing: 1.2px;
+    font-size: 0.94rem;
 }
 
 @keyframes menuFadeIn {
@@ -950,6 +962,7 @@ html, body {
     grid-template-columns: 24px 1fr 24px;
     align-items: center;
     text-align: center;
+    white-space: nowrap;
     transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
 }
 
@@ -1058,30 +1071,92 @@ html, body {
 }
 
 /* 設定預留子畫面 */
+.settings-section-label {
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: #f3dfb9;
+    text-shadow: 0 2px 4px #000, 0 0 8px rgba(0, 0, 0, 0.9);
+    margin-bottom: 10px;
+}
+
 .settings-slot-list {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 11px;
     width: 100%;
-    margin-bottom: 12px;
+    margin-bottom: 11px;
 }
 
 .settings-slot-item {
-    padding: 11px 14px;
+    box-sizing: border-box;
+    height: 46px;
+    padding: 0 14px;
     border: 2px solid #9e7f47;
-    border-radius: 8px;
+    border-radius: 10px;
     background: rgba(30, 22, 29, 0.94);
-    box-shadow: 0 0 0 2px #140e13;
+    box-shadow:
+        0 0 0 2px #140e13,
+        inset 0 0 0 2px #3b2d38;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     font-size: 0.88rem;
     color: #f3dfb9;
+    white-space: nowrap;
 }
 
 .settings-slot-item span.slot-status {
     font-size: 0.72rem;
     color: #cbb68c;
-    white-space: nowrap;
+}
+/* 語言切換按鈕群組：暗色內凹卡槽＋緋紅金邊選中態 */
+.settings-slot-item .lang-toggle-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px;
+    background: #140e13;
+    border: 1.5px solid #5c492a;
+    border-radius: 7px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.settings-slot-item .lang-option-btn {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1.5px solid transparent;
+    background: #231c22;
+    color: #9e9585;
+    font-family: inherit;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.settings-slot-item .lang-option-btn:hover:not(.is-selected) {
+    background: #2e242c;
+    border-color: #9e7f47;
+    color: #f3dfb9;
+}
+
+.settings-slot-item .lang-option-btn.is-selected {
+    background: #7c2129;
+    border-color: #f7cf73;
+    color: #fff2d6;
+    font-weight: bold;
+    box-shadow:
+        0 0 0 1px #140e13,
+        inset 0 0 0 1px #a3323c;
+}
+
+.settings-slot-item .lang-option-btn:active {
+    transform: scale(0.95);
 }

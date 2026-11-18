@@ -75,7 +75,7 @@ const STORY_DATA_EN = {
                 { speaker: "Roach B", image: "images/5.png", text: "Hold on... who are you?" },
                 { speaker: "Roach C", image: "images/7.png", text: "So big..." },
                 { speaker: "You", image: "images/4.png", text: "Ah... sorry, did I scare you?" },
-                { speaker: "Roach A", image: "images/6.png", text: "Of course you did! It’s rare to see one of our own this big...\nWait...\nDoes that even count as one of our own?" },
+                { speaker: "Roach A", image: "images/6.png", text: "Of course you did!\nIt’s rare to see one of our own this big...\nWait...\nDoes that even count as one of our own?" },
                 { speaker: "Roach B", image: "images/5.png", text: "If we can understand each other, doesn’t that make us the same kind?" },
                 { speaker: "You", image: "images/4.png", text: "Well... honestly, I’m not really sure myself" },
                 { speaker: "Roach C", image: "images/7.png", text: "...\nActually, all insects speak the same language...\nThey just have different accents..." },

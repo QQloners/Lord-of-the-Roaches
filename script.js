@@ -1,5 +1,6 @@
 // 全局遊戲狀態：紀錄是否滿足秘密結局條件
 let secretEndingCondition1 = false;
+let lastMajorChapter = null;
 
 /* =================================
    0. 背景飄浮微塵粒子初始化
@@ -369,12 +370,69 @@ function bindDialogPressFeedback(card) {
 /* =================================
    3. 核心卡片渲染 renderCard()
 ================================= */
-function renderCard() {
+function getMajorChapter(chapterText) {
+    const raw = String(chapterText || "").trim();
+    if (!raw) return "";
+    // 擷取「・」、「·」、「:」、「：」或「-」之前的大章節名稱（如「第一章」、「第二章」、「Chapter 2」）
+    return raw.split(/[・·:：\-]/)[0].trim();
+}
+
+function shouldTriggerChapterShuffle(data) {
+    if (!data || data.ending) return false;
+
+    // 1. 若卡片明確標記為新章節（例如與三隻蟑螂道別後的卡片設定 newChapter: true）
+    if (data.newChapter || data.shuffleOnEnter) {
+        const major = getMajorChapter(data.chapter);
+        if (major) lastMajorChapter = major;
+        return true;
+    }
+
+    // 2. 自動比對大章節名稱是否切換（例如 null -> 第一章 -> 第二章 -> 第三章）
+    const currentMajor = getMajorChapter(data.chapter);
+    if (currentMajor && currentMajor !== lastMajorChapter) {
+        lastMajorChapter = currentMajor;
+        return true;
+    }
+
+    return false;
+}
+
+function renderChapterShuffleTransition(data) {
+    gameOver.hidden = true;
+    isAnimating = true;
+    isDragging = false;
+    awakeStage = 0;
+    startSequenceComplete = false;
+    currentDialogueFlow = null;
+
+    viewport.innerHTML = "";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "title-deck-wrapper";
+
+    const deckCard = document.createElement("div");
+    deckCard.className = "story-card title-main-card";
+    deckCard.innerHTML = getCardBackHTML();
+
+    wrapper.appendChild(deckCard);
+    viewport.appendChild(wrapper);
+
+    // 執行連續三張實體刷牌動畫，結束後翻開新章節第一張卡片
+    playDeckShuffleSequence(wrapper, deckCard, () => {
+        if (typeof playCardSound === "function") playCardSound("return");
+        deckCard.classList.add("is-flip-to-edge");
+
+        setTimeout(() => {
+            renderCard({ skipChapterShuffle: true, revealFromEdge: true });
+        }, 310);
+    });
+}
+
+function renderCard(options = {}) {
     const data = getActiveStory()[currentCardId];
     if (!data) return;
 
     if (!data.dialogueFlow) currentDialogueFlow = null;
-    if (data.onEnter) data.onEnter();
 
     if (typingTimer) {
         clearInterval(typingTimer);
@@ -392,12 +450,34 @@ function renderCard() {
         return;
     }
 
+    // 進入新的大章節時，先執行實體洗牌過場再翻開卡片
+    if (!options.skipChapterShuffle && shouldTriggerChapterShuffle(data)) {
+        renderChapterShuffleTransition(data);
+        return;
+    }
+
+    if (data.onEnter) data.onEnter();
+
     gameOver.hidden = true;
     awakeStage = 0;
     startSequenceComplete = false;
 
+    const finalizeCardReveal = () => {
+        if (!options.revealFromEdge) return;
+        const revealedCard = viewport.querySelector(".story-card");
+        if (!revealedCard) return;
+
+        isAnimating = true;
+        revealedCard.classList.add("is-flip-from-edge");
+        setTimeout(() => {
+            revealedCard.classList.remove("is-flip-from-edge");
+            isAnimating = false;
+        }, 340);
+    };
+
     if (currentCardId === "start") {
         renderStartCard(data);
+        finalizeCardReveal();
         return;
     }
 
@@ -406,6 +486,7 @@ function renderCard() {
 
     if (data.dialogueFlow) {
         renderDialogueFlow(data);
+        finalizeCardReveal();
         return;
     }
 
@@ -522,6 +603,7 @@ function renderCard() {
     });
 
     bindCardEvents(card);
+    finalizeCardReveal();
 }
 
 /* =================================
@@ -721,7 +803,8 @@ function renderStartCard(data) {
 /* =================================
    4. 字幕上升動畫與打字流程
 ================================= */
-function splitTextIntoSegments(text, maxLength = 80) {
+function splitTextIntoSegments(text, maxLength = null) {
+    const limit = maxLength || (currentLanguage === "en" ? 160 : 80);
     const paragraphs = String(text)
         .split(/\n+/)
         .map(p => p.trim())
@@ -730,12 +813,19 @@ function splitTextIntoSegments(text, maxLength = 80) {
     const segments = [];
 
     paragraphs.forEach(paragraph => {
-        while (paragraph.length > maxLength) {
-            let cutIndex = maxLength;
-            for (let i = maxLength; i >= Math.floor(maxLength * 0.65); i--) {
-                if ("，。！？；、".includes(paragraph[i - 1])) {
+        while (paragraph.length > limit) {
+            let cutIndex = limit;
+            for (let i = limit; i >= Math.floor(limit * 0.6); i--) {
+                if ("，。！？；、,.!?;".includes(paragraph[i - 1])) {
                     cutIndex = i;
                     break;
+                }
+            }
+            // 英文若找不到標點，退而求其次找空格斷詞，避免把單字從中間切半
+            if (cutIndex === limit && currentLanguage === "en") {
+                const lastSpace = paragraph.lastIndexOf(" ", limit);
+                if (lastSpace > Math.floor(limit * 0.5)) {
+                    cutIndex = lastSpace;
                 }
             }
             segments.push(paragraph.slice(0, cutIndex).trim());
@@ -1152,6 +1242,7 @@ function restartGame() {
     currentDialogueFlow = null;
     currentCardId = "start";
     secretEndingCondition1 = false;
+    lastMajorChapter = null;
     renderCard();
 }
 
@@ -1225,6 +1316,41 @@ function getCardBackHTML() {
     return `<div class="title-card-back"></div>`;
 }
 
+/* 共用實體刷牌動畫引擎（主選單進場與大章節切換共用） */
+function playDeckShuffleSequence(wrapper, referenceCard, onComplete) {
+    const shuffleDirections = ["shuffle-left", "shuffle-right", "shuffle-left"];
+    const staggerMs = 210;
+    const cardDurationMs = 520;
+
+    shuffleDirections.forEach((dirClass, idx) => {
+        setTimeout(() => {
+            if (!wrapper.isConnected) return;
+
+            // 音效與卡牌實際開始被抽出完全同步
+            if (typeof playCardSound === "function") playCardSound("pick");
+
+            const dummy = document.createElement("div");
+            dummy.className = `story-card shuffle-dummy-card ${dirClass}`;
+            dummy.style.width = `${referenceCard.offsetWidth}px`;
+            dummy.style.height = `${referenceCard.offsetHeight}px`;
+            wrapper.appendChild(dummy);
+
+            // 動畫結束後確保移除虛擬卡牌 DOM，不殘留節點
+            const cleanup = () => {
+                if (dummy.parentNode) dummy.remove();
+            };
+            dummy.addEventListener("animationend", cleanup, { once: true });
+            setTimeout(cleanup, cardDurationMs + 60);
+        }, idx * staggerMs);
+    });
+
+    const totalShuffleTime = (shuffleDirections.length - 1) * staggerMs + cardDurationMs + 20;
+    setTimeout(() => {
+        if (!wrapper.isConnected) return;
+        if (typeof onComplete === "function") onComplete();
+    }, totalShuffleTime);
+}
+
 function renderTitleMenu() {
     gameOver.hidden = true;
     isAnimating = true;
@@ -1232,6 +1358,7 @@ function renderTitleMenu() {
     awakeStage = 0;
     startSequenceComplete = false;
     currentDialogueFlow = null;
+    lastMajorChapter = null;
 
     applyLanguageUI();
     if (chapterName) {
@@ -1251,22 +1378,8 @@ function renderTitleMenu() {
     wrapper.appendChild(mainCard);
     viewport.appendChild(wrapper);
 
-    // 執行 3 次左右洗牌動畫（假牌尺寸與主卡片完全一致）
-    const shuffleDirections = ["shuffle-left", "shuffle-right", "shuffle-left"];
-    shuffleDirections.forEach((dirClass, idx) => {
-        setTimeout(() => {
-            if (typeof playCardSound === "function") playCardSound("pick");
-            const dummy = document.createElement("div");
-            dummy.className = `story-card shuffle-dummy-card ${dirClass}`;
-            dummy.style.width = `${mainCard.offsetWidth}px`;
-            dummy.style.height = `${mainCard.offsetHeight}px`;
-            wrapper.appendChild(dummy);
-            setTimeout(() => dummy.remove(), 360);
-        }, idx * 240);
-    });
-
-    // 洗牌結束後，翻開第一張卡片顯示選單
-    setTimeout(() => {
+    // 執行連續三張實體刷牌動畫，結束後翻開主選單
+    playDeckShuffleSequence(wrapper, mainCard, () => {
         if (typeof playCardSound === "function") playCardSound("return");
         mainCard.classList.add("is-flipping");
 
@@ -1278,7 +1391,7 @@ function renderTitleMenu() {
             mainCard.classList.remove("is-flipping");
             isAnimating = false;
         }, 660);
-    }, 820);
+    });
 }
 
 function showMainMenuFace(card) {
@@ -1321,7 +1434,7 @@ function showMainMenuFace(card) {
         });
     });
 
-    // 1. 開始遊戲 -> 原地旋轉 360° 翻開進入第一幕（醒來）
+    // 1. 開始遊戲 -> 轉為卡背後進入第一章開頭洗牌與翻牌
     startBtn.addEventListener("click", () => {
         if (isAnimating) return;
         isAnimating = true;
@@ -1336,32 +1449,6 @@ function showMainMenuFace(card) {
         setTimeout(() => {
             currentCardId = "start";
             renderCard();
-
-            const firstSceneCard = viewport.querySelector(".story-card");
-            if (firstSceneCard) {
-                isAnimating = true;
-                const wakeHint = firstSceneCard.querySelector(".wake-hint");
-                if (wakeHint) wakeHint.style.visibility = "hidden";
-
-                const tempBack = document.createElement("div");
-                tempBack.className = "title-card-back";
-                tempBack.style.position = "absolute";
-                tempBack.style.inset = "0";
-                tempBack.style.zIndex = "10";
-                firstSceneCard.appendChild(tempBack);
-
-                firstSceneCard.classList.add("is-spin-in");
-
-                setTimeout(() => {
-                    tempBack.remove();
-                    if (wakeHint) wakeHint.style.visibility = "visible";
-                }, 170);
-
-                setTimeout(() => {
-                    firstSceneCard.classList.remove("is-spin-in");
-                    isAnimating = false;
-                }, 350);
-            }
         }, 320);
     });
 

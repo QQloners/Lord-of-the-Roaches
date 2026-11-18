@@ -1339,7 +1339,7 @@ const UI_TEXT = {
         settings: "Settings",
         noSaveTip: "No save data found",
         settingsHeader: "— SETTINGS —",
-        textSound: "🔊 Text Sound",
+        textSound: "🔊 SFX",
         soundOn: "ON",
         soundOff: "OFF",
         textSoundStatus: "",

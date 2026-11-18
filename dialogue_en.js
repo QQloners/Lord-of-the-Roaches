@@ -1,936 +1,496 @@
 /* =================================
-   1. 劇情資料庫 STORY_DATA
+   1. English Story Database STORY_DATA_EN
 ================================= */
 const STORY_DATA_EN = {
-    // 裡面原本的劇情結構維持不變，之後慢慢把文字翻成英文即可
-    // 故事開頭（第一張圖：images/1.png，預設全黑）
+    // Story opening (first image: images/1.png, black by default)
     start: {
-        chapter: "第一章・卵鞘",
-        title: "純白的惡夢",
-        description: "某天早晨，你從一場不安的夢中醒來...\n這是怎麼回事!?我怎麼會變這樣!?\n你驚恐的吶喊...\n然而...\n此時的你...\n什麼都想不起來...\n也不知道...\n只確定自己曾經人類...\n此時，門外傳來一道聲音...\n「喔依~大家快來吃東西!」",
+        chapter: "Chapter 1: The Ootheca",
+        title: "A Pure White Nightmare",
+        description: "One morning, you wake from an unsettling dream...\nWhat’s going on?! Why do I look like this?!\nYou cry out in terror...\nBut...\nRight now...\nyou can’t remember anything...\nYou don’t even know...\nAll you’re sure of is that you used to be human...\nThen, a voice calls from outside your door...\n“Oi~ Everyone, come and get it!”",
         image: "images/1.png",
-        left: { label: "🚪 永遠不出門，絕對不想被人看見自己現在的樣子", next: "ending_1" },
-        right: { label: "🚪 鼓起勇氣打開房門，想辦法尋求協助", next: "dining_room" }
+        left: { label: "🚪 Never leave the room — no one can ever see what you’ve become", next: "ending_1" },
+        right: { label: "🚪 Summon your courage, open the door, and try to find help", next: "dining_room" }
     },
 
-    // 結局 1
+    // Ending 1
     ending_1: {
-        chapter: "終章・孤獨",
-        title: "【結局1：封閉的房間】",
-        achievement: "🏆 解鎖成就：不見天日",
-        description: "你選擇將自己死死關在房間裡...\n沒有勇氣踏出房門，也沒有嘗試尋找任何人。\n\n最後，你在無盡的恐懼與飢餓中，靜靜地死在了房間內...",
+        chapter: "Final Chapter: Solitude",
+        title: "[Ending 1: The Sealed Room]",
+        achievement: "🏆 Achievement Unlocked: Never Seen the Light of Day",
+        description: "You chose to lock yourself away in your room...\nYou didn’t have the courage to step outside, nor did you try to find anyone.\n\nIn the end, consumed by endless fear and hunger, you quietly died inside the room...",
         image: "images/ending_1.png",
         ending: true
     },
 
-    // 餐桌之下（預設模糊背景）
+    // Under the dining table (blurred background by default)
     dining_room: {
-        chapter: "第一章・卵鞘",
-        title: "無人接聽",
-        description: "你鼓起勇氣打開房門\n然而映入眼簾的是空無一人的走廊\n但你仍然聽見窸窣的聲音從客廳傳來...\n你循著聲音一步步挪動軀體來到餐桌附近...\n\n透過陰影張望，並發現餐桌底下正有三隻蟑螂聚集在一起，低聲碎唸著什麼...",
+        chapter: "Chapter 1: The Ootheca",
+        title: "Nobody Home",
+        description: "You muster your courage and open the door.\nBut all that greets you is an empty hallway.\nStill, you can hear a rustling sound coming from the living room...\nFollowing the noise, you drag your body step by step toward the dining table...\n\nPeering through the shadows, you spot three cockroaches huddled together beneath the table, muttering softly about something.",
         image: "images/2.png",
-        left: { label: "👂 隱蔽偷聽", next: "eavesdrop" },
-        right: { label: "💬 上前搭話", next: "talk_to_bugs" }
+        left: { label: "👂 Hide and eavesdrop", next: "eavesdrop" },
+        right: { label: "💬 Step forward and talk to them", next: "talk_to_bugs" }
     },
 
-    // 2. 偷聽劇情（暗中紀錄條件 1）
+    // 2. Eavesdropping scene (secretly records Condition 1)
     eavesdrop: {
-        chapter: "第一章・卵鞘",
-        title: "無主之地?",
-        description: "你屏住呼吸，將觸角貼近陰影深處……\n\n蟑螂A：「太好了!自從上一次這家的屋主離開後就不再打掃了!」\n蟑螂B：「可是...這間房子不是還有一個人嗎？」\n蟑螂C：「有人才有食物哪!看開點...重點是他不愛打掃!」",
+        chapter: "Chapter 1: The Ootheca",
+        title: "No Man’s Land?",
+        description: "You hold your breath and press your antennae deeper into the shadows……\n\nRoach A: “Great! Nobody’s cleaned this place since the owner left!”\nRoach B: “But... isn’t there still someone living in this house?”\nRoach C: “Where there’s a person, there’s food! Look on the bright side... the point is, he hates cleaning!”",
         image: "images/3.png",
         onEnter: () => {
             secretEndingCondition1 = true;
-            console.log("秘密結局條件 1 已解鎖！");
+            console.log("Secret ending condition 1 unlocked!");
         },
-        left: { label: "👥 上前搭話", next: "talk_to_bugs" },
-        right: { label: "👣 默默離開不搭話", next: "ending_2" }
+        left: { label: "👥 Step forward and talk to them", next: "talk_to_bugs" },
+        right: { label: "👣 Quietly leave without speaking", next: "ending_2" }
     },
 
-    // 3. 結局 2
+    // 3. Ending 2
     ending_2: {
-        chapter: "終章・消滅",
-        title: "【結局2：害蟲撲滅】",
-        achievement: "🏆 解鎖成就：驅蟲公司的業績",
-        description: "你選擇不搭話，悄悄退回陰影中。\n\n靠著骯髒屋子裡的殘渣，你苟延殘喘地活了半年。直到有一天，鄰居因為惡臭檢舉了這間房子……\n專業的驅蟲公司闖入，在濃烈的殺蟲劑煙霧中，你迎來了終局。",
+        chapter: "Final Chapter: Extermination",
+        title: "[Ending 2: Pest Eradication]",
+        achievement: "🏆 Achievement Unlocked: Another Win for Pest Control",
+        description: "You chose not to speak up and quietly slipped back into the shadows.\n\nLiving off the scraps in the filthy house, you scraped by for half a year. Then one day, a neighbor reported the house over the stench……\nProfessional exterminators stormed in, and amid thick clouds of insecticide, you met your end.",
         image: "images/ending_2.png",
         ending: true
     },
 
-    // 結局 3：選擇留下來與三隻蟑螂相處
+    // Ending 3: Choosing to stay and live with the three roaches
     ending_3: {
-        chapter: "終章・新的朋友",
-        title: "【結局3：新的朋友】",
+        chapter: "Final Chapter: New Friends",
+        title: "[Ending 3: New Friends]",
         description: "",
         ending: true
     },
 
-    // 4. 初次接觸、五個話題、獨角仙情報與最後決策
+    // 4. First contact, five topics, the rhinoceros beetle intel, and the final decision
     talk_to_bugs: {
-        chapter: "第一章・卵鞘",
+        chapter: "Chapter 1: The Ootheca",
 
         dialogueFlow: {
             intro: [
-                { speaker: "主角", image: "images/4.png", text: "那個……不好意思" },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "嗯？怎麼了？" },
-                { speaker: "蟑螂 B", image: "images/5.png", text: "等一下……你是誰啊？" },
-                { speaker: "蟑螂 C", image: "images/7.png", text: "好大隻……" },
-                { speaker: "主角", image: "images/4.png", text: "啊……抱歉，嚇到你們了嗎？" },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "當然阿!很少看到這麼大的同類...\n等等...\n這算同類嗎?" },
-                { speaker: "蟑螂 B", image: "images/5.png", text: "語言相通的話就是同類吧?" },
-                { speaker: "主角", image: "images/4.png", text: "這個嘛……其實我也不太清楚" },
-                { speaker: "蟑螂 C", image: "images/7.png", text: "拜託~每隻昆蟲說的話都馬相通...\n只是口音不太相近而已..." },
-                { speaker: "主角", image: "images/4.png", text: "拜託了\n我真的需要你們的幫忙..." },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "好吧...我們盡量幫你\n先介紹一下\n我是他們大哥，左邊這位是老二，右邊是三弟\n但在這之前請讓我問個問題\n你為什麼這麼大隻?" }
+                { speaker: "You", image: "images/4.png", text: "Um... excuse me" },
+                { speaker: "Roach A", image: "images/6.png", text: "Hm? What is it?" },
+                { speaker: "Roach B", image: "images/5.png", text: "Hold on... who are you?" },
+                { speaker: "Roach C", image: "images/7.png", text: "So big..." },
+                { speaker: "You", image: "images/4.png", text: "Ah... sorry, did I scare you?" },
+                { speaker: "Roach A", image: "images/6.png", text: "Of course you did! It’s rare to see one of our own this big...\nWait...\nDoes that even count as one of our own?" },
+                { speaker: "Roach B", image: "images/5.png", text: "If we can understand each other, doesn’t that make us the same kind?" },
+                { speaker: "You", image: "images/4.png", text: "Well... honestly, I’m not really sure myself" },
+                { speaker: "Roach C", image: "images/7.png", text: "...\nActually, all insects speak the same language...\nThey just have different accents..." },
+                { speaker: "You", image: "images/4.png", text: "Please\nI really need your help..." },
+                { speaker: "Roach A", image: "images/6.png", text: "All right... we’ll do what we can to help\nLet me introduce us first\nI’m the eldest of the three. \nThis is our second brother on the left, and our youngest on the right\nAnd who are you?\nWhy are you so huge?" }
             ],
 
             topics: [
                 {
-                    title: "關於主角的變身",
-                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    title: "About the Transformation",
+                    prompt: "What would you like to ask the three roaches?",
                     left: {
-                        label: "說明自己是人類",
+                        label: "Explain that you’re human",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我身形會這麼大是因為...\n我原本是人類" },
-                            { speaker: "大哥", image: "images/6.png", text: "人類?!\n真的假的？" },
-                            { speaker: "老二", image: "images/5.png", text: "雖然很難以置信\n但你體型這麼大確實說得通..." },
-                            { speaker: "三弟", image: "images/7.png", text: "天哪...\n你該不會就是住在這房子的那一個人吧..." },
-                            { speaker: "主角", image: "images/4.png", text: "噢...\n那應該就是他了...\n但實不相瞞...\n我現在實在想不起來自己以前的樣子" },
-                            { speaker: "三弟", image: "images/7.png", text: "什麼意思?" },
-                            { speaker: "主角", image: "images/4.png", text: "自己說明有點奇怪\n但我似乎失去記憶了..." },
-                            { speaker: "三隻蟑螂", image: "images/7.png", text: "什麼!?" }
+                            { speaker: "You", image: "images/4.png", text: "The reason I’m this big is...\nI used to be human" },
+                            { speaker: "Eldest", image: "images/6.png", text: "Human?!\nReally?" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "It’s hard to believe\nbut it would explain why you’re so big..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "Oh my gosh...\nYou’re not the person who lives in this house, are you...?" },
+                            { speaker: "You", image: "images/4.png", text: "Oh...\nThen that must be him...\nBut to be honest...\nI can’t remember what I used to be like" },
+                            { speaker: "Youngest", image: "images/7.png", text: "What do you mean?" },
+                            { speaker: "You", image: "images/4.png", text: "It feels weird saying it myself\nbut I think I’ve lost my memory..." },
+                            { speaker: "Three Roaches", image: "images/7.png", text: "What?!" }
                         ]
                     },
                     right: {
-                        label: "簡單自我介紹，尋求幫助",
+                        label: "Briefly introduce yourself and ask for help",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "說實話\n我其實是人類，但現在變成了蟑螂" },
-                            { speaker: "大哥", image: "images/6.png", text: "!" },
-                            { speaker: "老二", image: "images/5.png", text: "可你現在這個樣子...\n我實在很難相信我們是同類" },
-                            { speaker: "三弟", image: "images/7.png", text: "對阿...\n一般蟑螂可沒有你這麼大的身體" },
-                            { speaker: "大哥", image: "images/6.png", text: "但他確實是巨大版本的蟑螂...\n姑且相信你的話...\n但你怎麼會變成這樣?" },
-                            { speaker: "主角", image: "images/4.png", text: "那個...\n我也不知道...\n因為我什麼都不記得了" },
-                            { speaker: "三隻蟑螂", image: "images/7.png", text: "..." }
+                            { speaker: "You", image: "images/4.png", text: "To be honest\nI’m actually human, but now I’ve turned into a cockroach" },
+                            { speaker: "Eldest", image: "images/6.png", text: "!" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "But looking at you like this...\nI really can’t believe we’re the same kind" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Yeah...\nRegular roaches don’t have bodies as big as yours" },
+                            { speaker: "Eldest", image: "images/6.png", text: "But he really is a giant version of a roach...\nI’ll take your word for it, for now...\nBut how did you end up like this?" },
+                            { speaker: "You", image: "images/4.png", text: "Well...\nI don’t know either...\nBecause I can’t remember anything" },
+                            { speaker: "Three Roaches", image: "images/7.png", text: "..." }
                         ]
                     }
                 },
                 {
-                    title: "關於變回人類",
-                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    title: "Back into a Human?",
+                    prompt: "What would you like to ask the three roaches?",
                     left: {
-                        label: "有無變回人類的方法",
+                        label: "Is there a way to turn back into a human?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "所以我才想問\n你們知不知道變回去的方法?" },
-                            { speaker: "大哥", image: "images/6.png", text: "變回人類？\n不...\n這種事我們從來沒想過" },
-                            { speaker: "老二", image: "images/5.png", text: "而且即便知道了\n我想在座各位都不會想變成人類吧?" },
-                            { speaker: "三隻蟑螂", image: "images/7.png", text: "確實..." },
-                            { speaker: "主角", image: "images/4.png", text: "為什麼?" },
-                            { speaker: "三弟", image: "images/7.png", text: "你自己說說看當人類有什麼好處?" },
-                            { speaker: "主角", image: "images/4.png", text: "...\n等等...這不公平\n我什麼都想不起來阿" },
-                            { speaker: "大哥", image: "images/6.png", text: "也許當人類太爛了?\n所以你自己不願想起來?" },
-                            { speaker: "主角", image: "images/4.png", text: "...\n不會吧..." }
+                            { speaker: "You", image: "images/4.png", text: "That’s exactly why I wanted to ask\nDo you know any way to change back?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "Turn back into a human?\nNo...\nWe’ve never even thought about something like that" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "And even if we knew\nI doubt any of us would want to be human, right?" },
+                            { speaker: "Three Roaches", image: "images/7.png", text: "True..." },
+                            { speaker: "You", image: "images/4.png", text: "Why not?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "You tell us, what’s so great about being human?" },
+                            { speaker: "You", image: "images/4.png", text: "...\nHey, wait... that’s not fair\nI can’t remember anything!" },
+                            { speaker: "Eldest", image: "images/6.png", text: "Maybe being human was just terrible?\nAnd that’s why you don’t want to remember?" },
+                            { speaker: "You", image: "images/4.png", text: "...\nNo way..." }
                         ]
                     },
                     right: {
-                        label: "有沒有類似經歷的同類?",
+                        label: "Are there others who’ve gone through the same thing?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "你們沒有看過任何一樣經歷的昆蟲嗎?" },
-                            { speaker: "老二", image: "images/5.png", text: "這個嘛...\n沒有親眼看過..." },
-                            { speaker: "主角", image: "images/4.png", text: "什麼意思?" },
-                            { speaker: "三弟", image: "images/7.png", text: "其實許多蟲類本來就有不少喜歡聲稱自己以前是人類的昆蟲..." },
-                            { speaker: "大哥", image: "images/6.png", text: "我以前就會這樣...\n自己也不知道當初怎麼了\n但一段時間過後就不會再說了" },
-                            { speaker: "主角", image: "images/4.png", text: "蝦?\n為什麼?" },
-                            { speaker: "大哥", image: "images/6.png", text: "不知道\n也許我以前就是喜歡胡言亂語" },
-                            { speaker: "老二", image: "images/5.png", text: "你以前確實會" },
-                            { speaker: "三弟", image: "images/7.png", text: "但即便大哥以前說自己是人類\n但那時候的身形就跟我們一樣\n哪會像你一樣那麼大隻\n如果說這本來是人類\n倒有幾分可信度" },
-                            { speaker: "老二", image: "images/5.png", text: "而且不光是大哥\n放眼望去還有很多其他種類的昆蟲\n偶爾都有一些跳出來說自己本來是人類" },
-                            { speaker: "主角", image: "images/4.png", text: "天哪..." }
+                            { speaker: "You", image: "images/4.png", text: "Haven’t you ever come across an insect with the same experience?" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "Well...\nNot with our own eyes..." },
+                            { speaker: "You", image: "images/4.png", text: "What do you mean?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Actually, plenty of bugs like to claim they used to be human..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "I used to do that too...\nI don’t even know what got into me back then\nBut after a while, I stopped saying it" },
+                            { speaker: "You", image: "images/4.png", text: "Huh?\nWhy?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "No idea\nMaybe I just liked talking nonsense back then" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "You really did" },
+                            { speaker: "Youngest", image: "images/7.png", text: "But even when big bro claimed to be human\nhe was the same size as the rest of us back then\nNothing like you, so huge\nIf anyone was really human once\nyou’d be a lot more believable" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "And it’s not just big bro\nLook around, and there are plenty of other kinds of insects\nwho pop up now and then saying they used to be human" },
+                            { speaker: "You", image: "images/4.png", text: "Oh my gosh..." }
                         ]
                     }
                 },
                 {
-                    title: "關於這間房子",
-                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    title: "About This House",
+                    prompt: "What would you like to ask the three roaches?",
                     left: {
-                        label: "是否有其他昆蟲能提供線索?",
+                        label: "Is there another insect who could give me a lead?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "難道就沒有其他能提供線索的昆蟲了?" },
-                            { speaker: "三弟", image: "images/7.png", text: "這個嘛..." },
-                            { speaker: "大哥", image: "images/6.png", text: "倒不是沒有..." },
-                            { speaker: "老二", image: "images/5.png", text: "老天爺...\n你們是認真的?\n我可不會推薦那傢伙..." },
-                            { speaker: "主角", image: "images/4.png", text: "哪個傢伙...?" },
-                            { speaker: "三弟", image: "images/7.png", text: "話說在前頭...\n我也不太推薦他\n但根據你的描述\n他確實能給你一些資訊" },
-                            { speaker: "大哥", image: "images/6.png", text: "但可能會受傷\n我們曾經跟他協商想拿食物\n他不但拒絕了，還打傷三弟" },
-                            { speaker: "主角", image: "images/4.png", text: "什麼!？" },
-                            { speaker: "大哥", image: "images/6.png", text: "老二想幫忙...\n結果就是我們的雙腿都被打斷了..." },
-                            { speaker: "主角", image: "images/4.png", text: "這樣的人是能知道什麼資訊!?" },
-                            { speaker: "三弟", image: "images/7.png", text: "冷靜點...\n我之所以會認為他能幫你\n是因為他不久前才搬來這裡住\n是一隻從外面世界住進來的昆蟲" },
-                            { speaker: "主角", image: "images/4.png", text: "外面世界?" },
-                            { speaker: "三弟", image: "images/7.png", text: "對阿...\n他對昆蟲世界的事情知道得比我們多\n特別是**比武大會**..." }
+                            { speaker: "You", image: "images/4.png", text: "Isn’t there any other insect who could give me a lead?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Well..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "It’s not that there isn’t..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "For heaven’s sake...\nAre you serious?\nI’m not recommending that guy..." },
+                            { speaker: "You", image: "images/4.png", text: "Which guy...?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "I’ll say this up front...\nI don’t really recommend him either\nBut from what you’ve told us\nhe really could give you some information" },
+                            { speaker: "Eldest", image: "images/6.png", text: "But you might get hurt\nWe once tried to negotiate with him for some food\nNot only did he refuse, he beat up our youngest" },
+                            { speaker: "You", image: "images/4.png", text: "What?!" },
+                            { speaker: "Eldest", image: "images/6.png", text: "Second tried to help...\nAnd the result was that our legs got broken..." },
+                            { speaker: "You", image: "images/4.png", text: "What could a guy like that possibly know?!" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Calm down...\nThe reason I think he can help you\nis that he only moved in here recently\nHe’s an insect who came from the outside world" },
+                            { speaker: "You", image: "images/4.png", text: "The outside world?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Yeah...\nHe knows a lot more about the insect world than we do\nEspecially the **Grand Tournament**..." }
                         ]
                     },
                     right: {
-                        label: "這間房子有其他昆蟲在嗎?",
+                        label: "Are there any other insects in this house?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "你們知道這間房子還有哪些昆蟲嗎？" },
-                            { speaker: "三弟", image: "images/7.png", text: "倒是有一個..." },
-                            { speaker: "老二", image: "images/5.png", text: "不!\n我不准你提起那傢伙...\n他打傷你了!" },
-                            { speaker: "三弟", image: "images/7.png", text: "可是牠是從外面世界住進來的!\n他肯定知道些什麼..." },
-                            { speaker: "主角", image: "images/4.png", text: "打傷?\n發生什麼事了?" },
-                            { speaker: "大哥", image: "images/6.png", text: "說來話長...\n但三弟說的沒錯...\n他恐怕真的知道些什麼..." },
-                            { speaker: "老二", image: "images/5.png", text: "你們想再害一個同伴受害嗎?\n他就是個不愛分享食物的自私鬼" },
-                            { speaker: "主角", image: "images/4.png", text: "你們去跟他搶食物?" },
-                            { speaker: "大哥", image: "images/6.png", text: "不是搶\n只是單純地想要跟他要而已\n但事情出了差錯..." },
-                            { speaker: "三弟", image: "images/7.png", text: "總而言之!\n他對外面世界瞭如指掌\n尤其是**比武大會**!" }
+                            { speaker: "You", image: "images/4.png", text: "Do you know if there are any other insects in this house?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Well, there’s one..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "No!\nI won’t let you bring up that guy...\nHe hurt you!" },
+                            { speaker: "Youngest", image: "images/7.png", text: "But he came from the outside world!\nHe must know something..." },
+                            { speaker: "You", image: "images/4.png", text: "Hurt?\nWhat happened?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "It’s a long story...\nBut Youngest is right...\nHe probably does know something..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "Do you want another one of us to get hurt?\nHe’s just a selfish jerk who won’t share his food" },
+                            { speaker: "You", image: "images/4.png", text: "You tried to steal food from him?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "It wasn’t stealing\nWe just wanted to ask him for some\nBut things went wrong..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "Anyway!\nHe knows the outside world like the back of his hand\nEspecially the **Grand Tournament**!" }
                         ]
                     }
                 },
                 {
-                    title: "關於昆蟲騎士交流戰",
-                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    title: "The Insect Knight",
+                    prompt: "What would you like to ask the three roaches?",
                     left: {
-                        label: "比武大會?",
+                        label: "The Grand Tournament?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "比武大會?" },
-                            { speaker: "三弟", image: "images/7.png", text: "沒錯！\n那可是一場盛事!" },
-                            { speaker: "大哥", image: "images/6.png", text: "其實是我們長老很愛提起的故事...\n一場昆蟲界的榮耀決鬥..." },
-                            { speaker: "老二", image: "images/5.png", text: "反正我是不太信...\n就算是真的也輪不到蟑螂去\n你到不如跟我們一起走" },
-                            { speaker: "三弟", image: "images/7.png", text: "但想像一下!\n如果我們王國派出的代表是他這樣大的傢伙呢!?" },
-                            { speaker: "三隻蟑螂", image: "images/7.png", text: "..." },
-                            { speaker: "大哥", image: "images/6.png", text: "原來如此...\n我知道你為什麼這麼興奮了...\n但他這麼大隻...是不能做我們代表的..." },
-                            { speaker: "三弟", image: "images/7.png", text: "可是..." },
-                            { speaker: "老二", image: "images/5.png", text: "大哥說的沒錯...\n連我們都不能定義他到底算不算同類了" },
-                            { speaker: "主角", image: "images/4.png", text: "決鬥...王國...代表...\n你們到底在說什麼?\n而且這跟那隻昆蟲的資訊到底有什麼關係?" },
-                            { speaker: "大哥", image: "images/6.png", text: "這件事我建議你還是去問牠比較好\n畢竟我們從未到外面過\n對於王國來說，我們只是一介平民\n野史不可盡信...\n是不是真的我也不敢保證" }
+                            { speaker: "You", image: "images/4.png", text: "The Grand Tournament?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "That’s right!\nIt’s a huge event!" },
+                            { speaker: "Eldest", image: "images/6.png", text: "It’s really a story our elders love to tell...\nA glorious duel in the insect world..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "I don’t really buy it, personally...\nEven if it’s real, they’d never send a roach\nYou’d be better off just coming with us" },
+                            { speaker: "Youngest", image: "images/7.png", text: "But imagine!\nWhat if our kingdom’s representative were someone as big as him?!" },
+                            { speaker: "Three Roaches", image: "images/7.png", text: "..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "I see...\nNow I get why you’re so excited...\nBut someone this big... can’t be our representative..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "But..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "Big bro’s right...\nWe can’t even say for sure whether he counts as one of us" },
+                            { speaker: "You", image: "images/4.png", text: "Duel... kingdom... representative...\nWhat are you even talking about?\nAnd what does any of this have to do with that insect’s information?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "I’d suggest asking him about that yourself\nAfter all, we’ve never been outside\nTo the kingdom, we’re nothing but commoners\nLegends can’t be fully trusted...\nI can’t promise it’s true" }
                         ]
                     },
                     right: {
-                        label: "聽起來很可疑...",
+                        label: "That sounds suspicious...",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我有點擔心..." },
-                            { speaker: "大哥", image: "images/6.png", text: "三弟說得稍微有點粗暴\n準確來說\n更像是他自己一廂情願..." },
-                            { speaker: "三弟", image: "images/7.png", text: "可是大哥..." },
-                            { speaker: "老二", image: "images/5.png", text: "大哥只是想讓你認清現實...\n他一點也沒說錯..." },
-                            { speaker: "主角", image: "images/4.png", text: "怎麼回事?" },
-                            { speaker: "大哥", image: "images/6.png", text: "**比武大會**是長老代代傳下來的活動\n但更像是故事..." },
-                            { speaker: "老二", image: "images/5.png", text: "我更願意相信事故事..." },
-                            { speaker: "大哥", image: "images/6.png", text: "據說外面的昆蟲世界時不時會舉行彼此間的榮耀決鬥\n代表自己得種族去爭光..." },
-                            { speaker: "主角", image: "images/4.png", text: "之後呢?\n發生什麼事了?\n你們輸了?" },
-                            { speaker: "大哥", image: "images/6.png", text: "什麼都沒發生...\n然而問題就在這裡\n根本沒有蟑螂親眼見證過這種活動\n時間久了...\n活動變成故事\n故事變成傳說\n仔細想想蟑螂怎麼可能贏的過其他物種...?" }
+                            { speaker: "You", image: "images/4.png", text: "I’m a little worried..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "Youngest put it a bit harshly\nTo be precise\nit’s more like wishful thinking on his part..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "But big bro..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "Big bro just wants you to face reality...\nHe’s not wrong at all..." },
+                            { speaker: "You", image: "images/4.png", text: "What’s going on?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "The **Grand Tournament** is an event the elders have passed down through the generations\nBut it’s more like a story..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "I’d rather believe it’s only a story..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "They say that out in the insect world, glorious duels are held between the species every now and then\nwhere each one sends a representative to win honor for its own kind..." },
+                            { speaker: "You", image: "images/4.png", text: "And then?\nWhat happened?\nDid you lose?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "Nothing happened...\nAnd that’s exactly the problem\nNo roach has ever witnessed such an event with their own eyes\nOver time...\nthe event became a story\nand the story became a legend\nWhen you think about it, how could a roach ever beat the other species...?" }
                         ]
                     }
                 },
                 {
-                    title: "尋找能夠幫助主角的人",
-                    prompt: "你想向三隻蟑螂詢問哪件事？",
+                    title: "Who Can Help me?",
+                    prompt: "What would you like to ask the three roaches?",
                     left: {
-                        label: "最近又提起這個話題的原因...",
+                        label: "Why bring this up again lately...?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "但你們最近又提起這個話題就是因為..." },
-                            { speaker: "大哥", image: "images/6.png", text: "沒錯\n那傢伙在打我們之前自稱參加過**比武大會**\n警告我們不要碰牠的食物..." },
-                            { speaker: "老二", image: "images/5.png", text: "我看牠只是仗著自己去過外面嚇唬我們罷了!" },
-                            { speaker: "主角", image: "images/4.png", text: "牠到底是誰？" },
-                            { speaker: "三弟", image: "images/7.png", text: "一隻獨角仙" },
-                            { speaker: "主角", image: "images/4.png", text: "獨角仙?" },
-                            { speaker: "三弟", image: "images/7.png", text: "嗯!\n受傷的獨角仙...\n還是很會打架..." },
-                            { speaker: "大哥", image: "images/6.png", text: "或許牠能提供給你一些我們不知道的資訊..." },
-                            { speaker: "主角", image: "images/4.png", text: "這個**比武大會**跟我變回人類有什麼關係?" },
-                            { speaker: "老二", image: "images/5.png", text: "哈!\n你還真問到重點了!\n這也是為何我認為這是故......" },
-                            { speaker: "三弟", image: "images/7.png", text: "聽說第一名成為**王**的人可以**許願**!" },
-                            { speaker: "主角", image: "images/4.png", text: "我能理解為何大哥跟二哥不相信了...\n但..." },
+                            { speaker: "You", image: "images/4.png", text: "But the reason you’ve been talking about this again lately is..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "That’s right\nBefore he beat us up, that guy claimed he’d taken part in the **Grand Tournament**\nand warned us not to touch his food..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "I bet he was just using the fact that he’s been outside to scare us!" },
+                            { speaker: "You", image: "images/4.png", text: "Who is he, exactly?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "A rhinoceros beetle" },
+                            { speaker: "You", image: "images/4.png", text: "A rhinoceros beetle?" },
+                            { speaker: "Youngest", image: "images/7.png", text: "Yeah!\nAn injured rhinoceros beetle...\nwho’s still really good at fighting..." },
+                            { speaker: "Eldest", image: "images/6.png", text: "Maybe he can give you some information we don’t have..." },
+                            { speaker: "You", image: "images/4.png", text: "What does this **Grand Tournament** have to do with me turning back into a human?" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "Ha!\nYou really hit the nail on the head!\nThat’s exactly why I think it’s just a sto..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "They say whoever takes first place and becomes **King** gets to **make a wish**!" },
+                            { speaker: "You", image: "images/4.png", text: "I can see why you two don’t believe it...\nBut..." }
                         ]
                     },
                     right: {
-                        label: "這跟幫我有什麼關係?",
+                        label: "What does this have to do with helping me?",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "但是這**比武大會**跟我變回人類有什麼關係?" },
-                            { speaker: "大哥", image: "images/6.png", text: "這就是我跟老二懷疑的點了...\n據說..." },
-                            { speaker: "三弟", image: "images/7.png", text: "據說第一名成為**王**的人可以**許願**!" },
-                            { speaker: "主角", image: "images/4.png", text: "**許願**?" },
-                            { speaker: "老二", image: "images/5.png", text: "是那隻獨角仙自己的片面之詞...\n自稱參加過比武\n明明一身是傷...怎麼可能去比賽" },
-                            { speaker: "大哥", image: "images/6.png", text: "三弟說的那傢伙是一隻獨角仙\n就是剛剛提到打傷我們的..." },
-                            { speaker: "三弟", image: "images/7.png", text: "但牠對昆蟲世界的事情知道得比我們多!\n這是真的!" },
-                            { speaker: "大哥", image: "images/6.png", text: "恐怕...\n嚇唬我們的成分居多..." },
-                            { speaker: "老二", image: "images/5.png", text: "真是無聊...\n如果你願意去相信那隻獨角仙的話\n那我想你確實很適合當昆蟲...\n一隻毛毛蟲!" },
-                            { speaker: "主角", image: "images/4.png", text: "**許願**確實是有點誇張了...\n但..." },
+                            { speaker: "You", image: "images/4.png", text: "But what does this **Grand Tournament** have to do with me turning back into a human?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "That’s exactly what Second and I are doubtful about...\nThey say..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "They say whoever takes first place and becomes **King** gets to **make a wish**!" },
+                            { speaker: "You", image: "images/4.png", text: "**Make a wish**?" },
+                            { speaker: "Second Brother", image: "images/5.png", text: "That’s just that rhinoceros beetle’s own one-sided story...\nHe says he’s competed in the tournament\nBut he’s covered in injuries... how could he have competed?" },
+                            { speaker: "Eldest", image: "images/6.png", text: "The guy Youngest is talking about is a rhinoceros beetle\nThe one we just mentioned, who beat us up..." },
+                            { speaker: "Youngest", image: "images/7.png", text: "But he knows a lot more about the insect world than we do!\nThat part is true!" },
+                            { speaker: "Eldest", image: "images/6.png", text: "I’m afraid...\nhe was mostly just trying to scare us..." },
+                            { speaker: "Second Brother", image: "images/5.png", text: "How boring...\nIf you’re willing to believe that rhinoceros beetle\nthen I’d say you’re perfectly suited to be an insect...\na caterpillar!" },
+                            { speaker: "You", image: "images/4.png", text: "**Make a wish** does sound a bit over the top...\nBut..." }
                         ]
                     }
                 }
             ],
 
             finalSteps: [
-                { speaker: "大哥", image: "images/6.png", text: "你還是執意要去...\n對吧?" },
-                { speaker: "主角", image: "images/4.png", text: "恩...\n總得嘗試看看...\n他在哪裡?" },
-                { speaker: "三弟", image: "images/7.png", text: "他在走廊盡頭的房間..." },
-                { speaker: "老二", image: "images/5.png", text: "說真的...你沒必要去找牠吧?" },
-                { speaker: "主角", image: "images/4.png", text: "..." },
-                { speaker: "大哥", image: "images/6.png", text: "他說的沒錯...\n好吧...或許你真的曾經是人類...\n但你卻也想不起來當人類的好...\n不是嗎?" },
-                { speaker: "老二", image: "images/5.png", text: "大哥說的對...\n你跟我們一起生活不是更好嗎?" },
-                { speaker: "三弟", image: "images/7.png", text: "...\n確實...\n雖然**比武大會**很酷...\n但有你在一起說不定會更有趣..." },
-                { speaker: "主角", image: "images/4.png", text: "原來如此……" },
-                { speaker: "大哥", image: "images/6.png", text: "我不會強迫你...\n但**許願**這麼不切實際的事情...\n恐怕會讓你失望吧..." },
-                { speaker: "老二", image: "images/5.png", text: "恩恩...真的\n倒不如跟我們一起享用這個家豐富的資源\n享受生活豈不是更好" },
-                { speaker: "主角", image: "images/4.png", text: "..." },
-                { speaker: "大哥", image: "images/6.png", text: "看樣子...你已經做好決定了" }
+                { speaker: "Eldest", image: "images/6.png", text: "You’re still determined to go...\naren’t you?" },
+                { speaker: "You", image: "images/4.png", text: "Yeah...\nI have to at least try...\nWhere is he?" },
+                { speaker: "Youngest", image: "images/7.png", text: "He’s in the room at the end of the hallway..." },
+                { speaker: "Second Brother", image: "images/5.png", text: "Seriously... do you really have to go find him?" },
+                { speaker: "You", image: "images/4.png", text: "..." },
+                { speaker: "Eldest", image: "images/6.png", text: "He’s right...\nAll right... maybe you really were human once...\nBut you can’t even remember what was good about being human...\nCan you?" },
+                { speaker: "Second Brother", image: "images/5.png", text: "Big bro’s right...\nWouldn’t it be better to live with us?" },
+                { speaker: "Youngest", image: "images/7.png", text: "...\nTrue...\nThe **Grand Tournament** sounds cool...\nbut having you around might be even more fun..." },
+                { speaker: "You", image: "images/4.png", text: "I see……" },
+                { speaker: "Eldest", image: "images/6.png", text: "I won’t force you...\nBut something as unrealistic as **making a wish**...\nwill probably just let you down..." },
+                { speaker: "Second Brother", image: "images/5.png", text: "Yeah, really\nYou’d be better off enjoying this house’s plentiful resources with us\nWouldn’t enjoying life be better?" },
+                { speaker: "You", image: "images/4.png", text: "..." },
+                { speaker: "Eldest", image: "images/6.png", text: "Looks like...you’ve already made up your mind" }
             ],
 
             finalDecision: {
-                title: "最後的決定",
-                description: "眼前的三隻蟑螂似乎很歡迎主角加入牠們。另一方面，書房裡的獨角仙或許知道更多關於昆蟲騎士交流戰的情報，也可能幫助主角找到變回人類的線索。\n\n主角必須決定接下來的行動。",
+                title: "The Final Decision",
+                description: "The three roaches in front of you seem to welcome the protagonist to join them. On the other hand, the rhinoceros beetle in the study may know more about the Insect Knights’ Exchange Tournament, and might even help the protagonist find a clue to becoming human again.\n\nThe protagonist must decide what to do next.",
                 left: {
-                    label: "🚪 前往書房",
+                    label: "🚪 Head to the study",
                     next: "find_beetle",
                     steps: [
-                        { speaker: "主角", image: "images/4.png", text: "真的謝謝你們...\n但是變成人類這麼荒謬的事情都發生了...\n**許願**這種事雖然機會十分渺茫...\n但我想試試看" },
-                        { speaker: "大哥", image: "images/6.png", text: "這樣啊……那好吧!" },
-                        { speaker: "老二", image: "images/5.png", text: "別忘了...\n我們會一直在這裡...有什麼問題儘管來找我們\n可以的話...順便找機會替我們海扁那隻獨角仙一頓!" },
-                        { speaker: "三弟", image: "images/7.png", text: "注意安全!\n你一定可以成功的!" },
-                        { speaker: "大哥", image: "images/6.png", text: "下次再一起聊天吧！\n再見..." },
-                        { speaker: "旁白", text: "你向三隻蟑螂道別，朝書房的方向前進。\n後方你還能聽見三弟興奮的說著...\n(就像個**勇者**一樣!" }
+                        { speaker: "You", image: "images/4.png", text: "Thank you so much, really...\nBut something as absurd as turning into a roach has already happened...\nThe chance of **making a wish** is slim...\nbut I want to give it a try" },
+                        { speaker: "Eldest", image: "images/6.png", text: "I see... Well then, all right!" },
+                        { speaker: "Second Brother", image: "images/5.png", text: "Don’t forget...\nWe’ll always be here... come find us if you have any problems\nAnd if you can... find a chance to give that rhinoceros beetle a good beating for us!" },
+                        { speaker: "Youngest", image: "images/7.png", text: "Stay safe!\nI know you can do it!" },
+                        { speaker: "Eldest", image: "images/6.png", text: "Let’s chat again next time!\nSee you..." },
+                        { speaker: "Narrator", text: "You say goodbye to the three roaches and head toward the study.\nBehind you, you can still hear Youngest saying excitedly...\n“Just like a **hero**!”" }
                     ]
                 },
                 right: {
-                    label: "留下來與三隻蟑螂一起玩",
+                    label: "Stay and hang out with the three roaches",
                     next: "ending_3",
                     steps: [
-                        { speaker: "主角", image: "images/4.png", text: "嗯……好吧，難得有人願意陪我聊天。" },
-                        { speaker: "老二", image: "images/5.png", text: "太好了！你總算想通了！" },
-                        { speaker: "三弟", image: "images/7.png", text: "哈哈哈！終於有新朋友了！" },
-                        { speaker: "大哥", image: "images/6.png", text: "雖然你個頭大...\n但從今天起你就是四弟了!\n咱們走吧!" },
-                        { speaker: "旁白", text: "主角決定留與三隻蟑螂一起度過時間。至於書房裡的獨角仙，以及騎士大會的事情，主角最終沒有再去了解..." }
+                        { speaker: "You", image: "images/4.png", text: "Hmm... all right, it’s not every day someone’s willing to keep me company." },
+                        { speaker: "Second Brother", image: "images/5.png", text: "Great! You finally came around!" },
+                        { speaker: "Youngest", image: "images/7.png", text: "Hahaha! We finally have a new friend!" },
+                        { speaker: "Eldest", image: "images/6.png", text: "Even though you’re huge...\nfrom today on, you’re our fourth brother!\nCome on, let’s go!" },
+                        { speaker: "Narrator", text: "The protagonist decides to stay and spend time with the three roaches. As for the rhinoceros beetle in the study and the matter of the Knights’ Tournament, the protagonist never looked into it any further..." }
                     ]
                 }
             }
         }
     },
 
-    // 第二章：初次會面・獨角大仙
+    // Chapter 2: First Meeting – Master Rhinoceros
     find_beetle: {
-        chapter: "第二章・怪異的學者",
+        chapter: "Chapter 2: The Eccentric Scholar",
 
         dialogueFlow: {
-            introHeading: "初次會面：獨角大仙",
+            introHeading: "First Meeting: Master Rhinoceros",
             intro: [
-                { speaker: "旁白", image: "images/8.png", text: "【畫面：書房】\n主角緩緩走進書房。" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "……有事？" },
-                { speaker: "主角", image: "images/4.png", text: "不好意思，打擾了。請問你是獨角仙嗎？" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "請稱呼我獨角大仙。" },
-                { speaker: "主角", image: "images/4.png", text: "啊……抱歉，獨角大仙。" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "你是誰？找我有什麼事？" },
-                { speaker: "主角", image: "images/4.png", text: "我叫（主角名字）。我是今天早上在這間屋子裡醒來的……那隻白色蟑螂。" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "所以？" },
-                { speaker: "主角", image: "images/4.png", text: "我有一些事情想請教你。" }
+                { speaker: "Narrator", image: "images/8.png", text: "[Scene: The Study]\nThe protagonist slowly walks into the study." },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "......Yes? What is it?" },
+                { speaker: "You", image: "images/4.png", text: "Sorry to bother you. Are you a rhinoceros beetle?" },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "Please address me as Master Rhinoceros." },
+                { speaker: "You", image: "images/4.png", text: "Ah... sorry, Master Rhinoceros." },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "Who are you? What do you want from me?" },
+                { speaker: "You", image: "images/4.png", text: "My name is (protagonist’s name). I’m the... white cockroach who woke up in this house this morning." },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "And?" },
+                { speaker: "You", image: "images/4.png", text: "There are some things I’d like to ask you." }
             ],
 
             topics: [
-                // 左右選擇一：主角如何開口？
+                // Choice 1 (left/right): How does the protagonist begin?
                 {
-                    title: "主角如何開口？",
-                    prompt: "面對氣場威嚴的獨角大仙，你決定怎麼開口？",
+                    title: "How Does the Protagonist Begin?",
+                    prompt: "Facing the imposing Master Rhinoceros, how do you decide to begin?",
                     left: {
-                        label: "禮貌地說明",
+                        label: "Explain politely",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我知道這件事可能很突然，但我真的有些事情想向你請教。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "既然如此，就把事情說清楚。" }
+                            { speaker: "You", image: "images/4.png", text: "I know this might be sudden, but I really do have some things I’d like to ask you." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "In that case, explain the situation clearly." }
                         ]
                     },
                     right: {
-                        label: "急切地尋求幫助",
+                        label: "Plead for help urgently",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "拜託你了！我真的不知道該怎麼辦才好。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "先冷靜下來。慌張並不能解決問題。" }
+                            { speaker: "You", image: "images/4.png", text: "Please! I really don’t know what to do!" },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "Calm down first. Panicking won’t solve anything." }
                         ]
                     },
-                    // 【兩條路線回歸主線】第一階段與第二階段
-                    afterHeading: "變身的真相與生前性格",
+                    // [Both routes rejoin the main storyline] Phase 1 and Phase 2
+                    afterHeading: "The Truth Behind the Transformation and Your Past Personality",
                     afterSteps: [
-                        { speaker: "主角", image: "images/4.png", text: "其實……我原本是人類。" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "人類？" },
-                        { speaker: "主角", image: "images/4.png", text: "是的。我今天早上醒來的時候，身體就變成了這副模樣。\n我完全不知道發生了什麼事。明明昨天還是正常的人類，結果一醒來，就變成了一隻巨大的蟑螂。" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "……繼續說。" },
-                        { speaker: "主角", image: "images/4.png", text: "我想知道，自己究竟為什麼會變成蟑螂？\n還有……有沒有辦法讓我變回人類？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "原來如此。\n不過，在回答你的問題之前，我需要先了解一件事。\n你身為人類時，是怎樣的一個人？" },
-                        { speaker: "主角", image: "images/4.png", text: "我的性格？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "沒錯。平時如何與人相處？遇到事情時又會怎麼應對？\n仔細想想。不要只用好或不好來形容自己。" }
+                        { speaker: "You", image: "images/4.png", text: "Actually... I used to be human." },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Human?" },
+                        { speaker: "You", image: "images/4.png", text: "Yes. When I woke up this morning, my body had turned into this.\nI have no idea what happened. I was a perfectly normal human just yesterday, and then I woke up as a giant cockroach." },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "......Go on." },
+                        { speaker: "You", image: "images/4.png", text: "I want to know why I turned into a cockroach in the first place.\nAnd... is there any way for me to turn back into a human?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "I see.\nHowever, before I answer your questions, there’s something I need to understand first.\nWhat kind of person were you when you were human?" },
+                        { speaker: "You", image: "images/4.png", text: "My personality?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Yes. How did you get along with others? How did you handle things when trouble came up?\nThink carefully. Don’t just describe yourself as “good” or “bad.”" }
                     ]
                 },
 
-                // 左右選擇二：主角描述自己過去的性格
+                // Choice 2 (left/right): The protagonist describes their past personality
                 {
-                    title: "描述過去的性格",
-                    prompt: "回想身為人類時的自己，你是怎樣的人？",
+                    title: "Describing Your Past Personality",
+                    prompt: "Thinking back to who you were as a human, what kind of person were you?",
                     left: {
-                        label: "不擅長與人相處",
+                        label: "Not good with people",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我一直都不太擅長和別人相處。\n很多時候，我會下意識地避開人群，也不太會主動和別人交談。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "原來如此。你習慣與他人保持距離。" }
+                            { speaker: "You", image: "images/4.png", text: "I was never really good at getting along with others.\nOften I’d instinctively avoid crowds, and I rarely started conversations myself." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "I see. You were used to keeping your distance from others." }
                         ]
                     },
                     right: {
-                        label: "習慣待在自己的世界",
+                        label: "Used to staying in my own world",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我並不是討厭別人，只是……比起和別人相處，我更習慣一個人待著。\n有時候，我會沉浸在自己的思緒裡，甚至忘記周圍發生了什麼事。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "我明白了。你更習慣將注意力留在自己的世界裡。" }
+                            { speaker: "You", image: "images/4.png", text: "It’s not that I disliked other people, it’s just... I was more comfortable being alone than being around others.\nSometimes I’d get lost in my own thoughts and forget what was going on around me." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "I understand. You preferred to keep your attention inside your own world." }
                         ]
                     },
-                    // 【兩條路線回歸主線】第三階段
-                    afterHeading: "昆蟲身分與許願的條件",
+                    // [Both routes rejoin the main storyline] Phase 3
+                    afterHeading: "Insect Identity and the Conditions for Making a Wish",
                     afterSteps: [
-                        { speaker: "獨角大仙", image: "images/9.png", text: "不論是哪一種，你過去似乎都很少主動走進人群之中。" },
-                        { speaker: "主角", image: "images/4.png", text: "這和我變成蟑螂有關係嗎？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "在這個世界，人類轉變成昆蟲並不是毫無理由的事情。\n一個人生前長久累積的性格與行為習慣，會與某種昆蟲的生存方式產生呼應。" },
-                        { speaker: "主角", image: "images/4.png", text: "呼應……？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "不同的昆蟲，有著不同的生存方式。\n有些昆蟲習慣群居，有些習慣獨自行動。有些善於正面對抗，有些則擅長躲藏、適應環境。\n人類生前的性格，也可能與這些特徵產生某種聯繫。" },
-                        { speaker: "主角", image: "images/4.png", text: "所以……我會變成蟑螂，是因為我以前的性格？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "這是我根據你剛才的描述所做出的判斷。\n蟑螂擅長在不受注意的地方生存，能夠適應環境，即使身處不起眼的角落，也能繼續活下去。\n你生前習慣將自己與外界隔開，這或許就是你與蟑螂產生聯繫的原因。" },
-                        { speaker: "主角", image: "images/4.png", text: "……\n那麼，這代表我再也不能變回人類了嗎？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "我並沒有這麼說。\n想要變回人類，並不是完全沒有辦法。" },
-                        { speaker: "主角", image: "images/4.png", text: "真的嗎？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "只要成為騎士競技的冠軍，並且登上王位，就能獲得一次許願的機會。\n屆時，你可以將自己的願望告訴國王。" },
-                        { speaker: "主角", image: "images/4.png", text: "也就是說……只要我成為冠軍、成為國王，就能許願變回人類？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "正是如此。" }
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Either way, you seem to have rarely walked into a crowd of your own accord." },
+                        { speaker: "You", image: "images/4.png", text: "Does that have something to do with me turning into a cockroach?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "In this world, a human turning into an insect is not without reason.\nThe personality and habits a person builds up over a lifetime come to resonate with the way of life of a certain kind of insect." },
+                        { speaker: "You", image: "images/4.png", text: "Resonate...?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Different insects have different ways of surviving.\nSome live in groups, others act alone. Some excel at confronting enemies head-on, while others are skilled at hiding and adapting to their surroundings.\nA human’s personality in life may form some kind of connection with these traits." },
+                        { speaker: "You", image: "images/4.png", text: "So... I turned into a cockroach because of the kind of person I used to be?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "That is my judgment based on what you just described.\nCockroaches excel at surviving in places no one notices. They adapt to their environment and keep living even in the most inconspicuous corners.\nIn life, you were accustomed to separating yourself from the outside world. That may be what connects you to the cockroach." },
+                        { speaker: "You", image: "images/4.png", text: "......\nThen does that mean I can never turn back into a human?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "I never said that.\nThere is a way to turn back into a human. It isn’t entirely impossible." },
+                        { speaker: "You", image: "images/4.png", text: "Really?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "If you become the champion of the Knights’ Tournament and ascend the throne, you will be granted a chance to make a wish.\nAt that time, you may tell the King your wish." },
+                        { speaker: "You", image: "images/4.png", text: "So... if I become champion and become king, I can wish to turn back into a human?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Exactly." }
                     ]
                 },
 
-                // 左右選擇三：主角對這個目標的反應
+                // Choice 3 (left/right): The protagonist's reaction to this goal
                 {
-                    title: "面對冠軍的條件",
-                    prompt: "得知變回人類的唯一方法後，你的反應是？",
+                    title: "Facing the Requirements for Champion",
+                    prompt: "Having learned the only way to turn back into a human, how do you react?",
                     left: {
-                        label: "決定接受挑戰",
+                        label: "Decide to accept the challenge",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "既然有辦法，那我就去參加騎士競技！\n只要能夠成為冠軍，我就有機會變回人類了。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "目標很明確。\n但在那之前，你還有許多事情需要學習。" }
+                            { speaker: "You", image: "images/4.png", text: "If there’s a way, then I’ll enter the Knights’ Tournament!\nIf I can become the champion, I’ll have a chance to turn back into a human." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "A clear goal.\nBut before that, there is still much you need to learn." }
                         ]
                     },
                     right: {
-                        label: "對這個條件感到不安",
+                        label: "Feel uneasy about the requirements",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "可是……要成為騎士冠軍，甚至還要成為國王？\n這聽起來根本不是普通人能夠做到的事情。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "確實不容易。\n但你現在連自己的身體都無法掌握，又怎麼能判斷自己將來做不到？" }
+                            { speaker: "You", image: "images/4.png", text: "But... become the Knights’ champion, and even become king?\nThat sounds like something an ordinary person could never do." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "It is certainly not easy.\nBut you can’t even control your own body right now, so how can you judge that you won’t be able to do it in the future?" }
                         ]
                     },
-                    // 【兩條路線回歸主線】第四階段與第五階段
-                    afterHeading: "掌握身體與冥想修行",
+                    // [Both routes rejoin the main storyline] Phase 4 and Phase 5
+                    afterHeading: "Mastering the Body and Meditation Training",
                     afterSteps: [
-                        { speaker: "主角", image: "images/4.png", text: "說起來……還有一件事情。\n為什麼我的身體會這麼巨大？有沒有辦法讓自己縮小？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "有。" },
-                        { speaker: "主角", image: "images/4.png", text: "真的有辦法？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "你現在的體型，並不是無法改變的。\n只是你還沒有學會如何控制這副身體。" },
-                        { speaker: "主角", image: "images/4.png", text: "控制身體？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "你的意識還停留在過去的人類身分，卻沒有真正理解自己現在的身體。\n只要你始終排斥這副身體，就很難掌握它。" },
-                        { speaker: "主角", image: "images/4.png", text: "那我究竟該怎麼做？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "首先，你必須接受一件事。\n你現在是一隻蟑螂。" },
-                        { speaker: "主角", image: "images/4.png", text: "……\n可是，我根本不想當蟑螂。" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "我沒有要求你放棄變回人類的願望。\n你可以繼續追求那個目標。\n但在那之前，這副身體就是你現在必須使用的身體。\n你必須先承認它的存在，理解它的構造，才能學會控制它。" },
-                        { speaker: "主角", image: "images/4.png", text: "所以……只要接受自己是蟑螂，就能縮小嗎？" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "光是接受還不夠。\n接下來，我要教你如何透過冥想掌握身體。\n保持身體穩定，閉上眼睛。\n感受你的六隻腳與地面接觸的觸感，留意身體的重量，以及背甲與腹部的起伏。\n不要急著改變體型，也不要刻意想像自己變回人類。\n先讓自己的意識，完整地感受到這副身體。\n接著，想像身體的輪廓逐漸收束，將自己的體型控制在你希望的大小。" },
-                        { speaker: "主角", image: "images/4.png", text: "聽起來……好像不太容易。" },
-                        { speaker: "獨角大仙", image: "images/9.png", text: "所以才需要練習。" }
+                        { speaker: "You", image: "images/4.png", text: "Come to think of it... there’s one more thing.\nWhy is my body so huge? Is there any way to make myself smaller?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "There is." },
+                        { speaker: "You", image: "images/4.png", text: "There really is a way?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Your current size is not something that cannot be changed.\nYou simply haven’t learned how to control this body yet." },
+                        { speaker: "You", image: "images/4.png", text: "Control my body?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Your mind is still stuck in your past human identity, and you haven’t truly come to understand the body you have now.\nAs long as you keep rejecting this body, it will be hard to master it." },
+                        { speaker: "You", image: "images/4.png", text: "Then what exactly should I do?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "First, you must accept one thing.\nYou are a cockroach now." },
+                        { speaker: "You", image: "images/4.png", text: "......\nBut I don’t want to be a cockroach at all." },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "I am not asking you to give up your wish to turn back into a human.\nYou may keep pursuing that goal.\nBut until then, this body is the one you have to use.\nYou must first acknowledge that it exists and understand how it is built before you can learn to control it." },
+                        { speaker: "You", image: "images/4.png", text: "So... if I just accept that I’m a cockroach, I can shrink?" },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "Acceptance alone is not enough.\nNext, I will teach you how to master your body through meditation.\nKeep your body steady and close your eyes.\nFeel your six legs touching the ground, and notice the weight of your body and the rise and fall of your back shell and abdomen.\nDon’t rush to change your size, and don’t deliberately imagine yourself turning back into a human.\nFirst, let your mind fully feel this body.\nThen, imagine the outline of your body gradually drawing inward, and bring your size down to whatever you wish it to be." },
+                        { speaker: "You", image: "images/4.png", text: "That sounds... not very easy." },
+                        { speaker: "Master Rhinoceros", image: "images/9.png", text: "That is why you need practice." }
                     ]
                 },
 
-                // 左右選擇四：主角準備開始修行
+                // Choice 4 (left/right): The protagonist prepares to begin training
                 {
-                    title: "開始冥想修行",
-                    prompt: "閉上眼睛前，你抱持著什麼心態開始修行？",
+                    title: "Beginning Meditation Training",
+                    prompt: "Before you close your eyes, what mindset do you bring to your training?",
                     left: {
-                        label: "認真修行",
+                        label: "Train earnestly",
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "我明白了。我會認真試試看。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "很好。保持安靜，集中精神。" },
-                            { speaker: "旁白", image: "images/8.png", text: "主角緩緩閉上眼睛，開始感受身體的重量。" },
-                            { speaker: "主角", image: "images/4.png", text: "……六隻腳都能感覺到地面的觸感。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "不要排斥這種感覺。繼續保持。" },
-                            { speaker: "主角", image: "images/4.png", text: "我現在……確實是一隻蟑螂。\n至少在變回人類以前，我必須學會控制這副身體。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "很好。不要分心。" }
+                            { speaker: "You", image: "images/4.png", text: "I understand. I’ll give it an honest try." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "Good. Stay quiet and focus." },
+                            { speaker: "Narrator", image: "images/8.png", text: "The protagonist slowly closes their eyes and begins to feel the weight of their body." },
+                            { speaker: "You", image: "images/4.png", text: "......I can feel the ground under all six legs." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "Don’t resist the sensation. Keep going." },
+                            { speaker: "You", image: "images/4.png", text: "I really am a cockroach right now...\nAt least until I turn back into a human, I have to learn to control this body." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "Good. Don’t get distracted." }
                         ]
                     },
                     right: {
-                        label: "不耐煩修行",
+                        label: "Train impatiently",
                         onSelect: () => {
                             window.hiddenMemoryMeditation = true;
-                            console.log("隱藏記憶點已解鎖：主角一邊冥想，一邊忍不住碎碎念的畫面");
+                            console.log("Hidden memory unlocked: the protagonist can’t help muttering while meditating");
                         },
                         steps: [
-                            { speaker: "主角", image: "images/4.png", text: "就只是冥想而已嗎？\n要我接受自己變成蟑螂……這種事情怎麼可能說接受就接受啊。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "你有什麼意見？" },
-                            { speaker: "主角", image: "images/4.png", text: "沒、沒有！我只是在集中精神！" },
-                            { speaker: "旁白", image: "images/8.png", text: "主角緩緩閉上眼睛，開始冥想。" },
-                            { speaker: "主角（小聲碎念）", image: "images/4.png", text: "明明以前還是人類……現在卻得注意自己的六隻腳……\n真是的……要不是為了變回去，誰想做這種事……" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "……\n你的注意力似乎不太集中。" },
-                            { speaker: "主角", image: "images/4.png", text: "我知道啦……我會認真一點。" },
-                            { speaker: "旁白", image: "images/8.png", text: "【隱藏記憶點：主角一邊冥想，一邊忍不住碎碎念的畫面】" },
-                            { speaker: "主角", image: "images/4.png", text: "……好吧。\n我不喜歡這副身體，但現在它確實是我的身體。\n至少……先學會控制它吧。" },
-                            { speaker: "獨角大仙", image: "images/9.png", text: "這樣就對了。繼續。" }
+                            { speaker: "You", image: "images/4.png", text: "So it’s just meditation?\nYou want me to accept being a cockroach... how could I just accept something like that on command?" },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "Do you have a problem with that?" },
+                            { speaker: "You", image: "images/4.png", text: "N-no! I’m just concentrating!" },
+                            { speaker: "Narrator", image: "images/8.png", text: "The protagonist slowly closes their eyes and begins to meditate." },
+                            { speaker: "You (Muttering)", image: "images/4.png", text: "I was human until yesterday... and now I have to pay attention to my six legs...\nHonestly... if it weren’t for turning back, who’d want to do this..." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "......\nYour concentration seems lacking." },
+                            { speaker: "You", image: "images/4.png", text: "I know, I know... I’ll take it more seriously." },
+                            { speaker: "Narrator", image: "images/8.png", text: "[Hidden Memory: The protagonist can’t help muttering while meditating]" },
+                            { speaker: "You", image: "images/4.png", text: "......Fine.\nI don’t like this body, but right now it really is mine.\nAt least... let me learn to control it first." },
+                            { speaker: "Master Rhinoceros", image: "images/9.png", text: "That’s the way. Continue." }
                         ]
                     }
                 }
             ],
 
-            // 縮小成功：共同結尾
-            finalHeading: "縮小成功",
+            // Shrinking succeeds: shared ending
+            finalHeading: "Shrinking Success",
             finalSteps: [
-                { speaker: "旁白", image: "images/8.png", text: "隨著主角逐漸集中精神，原本龐大的身體開始產生變化。\n六隻腳的比例逐漸縮小，身體與背甲也慢慢收束。" },
-                { speaker: "主角", image: "images/4.png", text: "咦……？" },
-                { speaker: "旁白", image: "images/8.png", text: "主角低頭看著自己的身體。" },
-                { speaker: "主角", image: "images/4.png", text: "我、我真的變小了！" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "你只是初步掌握了控制身體的方法。\n不要因為這點成果就鬆懈。接下來還有許多練習等著你。" },
-                { speaker: "主角", image: "images/4.png", text: "我明白了……\n謝謝你，獨角大仙。" },
-                { speaker: "獨角大仙", image: "images/9.png", text: "不用急著道謝。\n先記住今天學會的事情。你要走的路還很長。" }
+                { speaker: "Narrator", image: "images/8.png", text: "As the protagonist gradually focuses, their enormous body begins to change.\nThe proportions of the six legs slowly shrink, and the body and back shell gradually draw inward." },
+                { speaker: "You", image: "images/4.png", text: "Huh...?" },
+                { speaker: "Narrator", image: "images/8.png", text: "The protagonist looks down at their own body." },
+                { speaker: "You", image: "images/4.png", text: "I-I really did get smaller!" },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "You have merely grasped the basics of controlling your body.\nDon’t slack off over this small result. There is still a great deal of practice ahead of you." },
+                { speaker: "You", image: "images/4.png", text: "I understand...\nThank you, Master Rhinoceros." },
+                { speaker: "Master Rhinoceros", image: "images/9.png", text: "There’s no need to rush to thank me.\nRemember what you learned today. The road you have to walk is still long." }
             ],
 
-            // 場景結束後跳轉至下一張卡片
+            // After the scene ends, jump to the next card
             nextCard: "chapter2_end"
         }
     },
 
-    // 第二章場景結束過渡卡片
+    // Chapter 2 end-of-scene transition card
     chapter2_end: {
-        chapter: "第二章・怪異的學者",
-        title: "初次的修行",
-        description: "你成功學會了控制體型的方法。\n在獨角大仙的指導下，通往騎士競技的修行才正要開始……\n\n（後續劇情待續）",
+        chapter: "Chapter 2: The Eccentric Scholar",
+        title: "The First Training",
+        description: "You successfully learned how to control your size.\nUnder Master Rhinoceros’s guidance, the training that leads to the Knights’ Tournament is only just beginning……\n\n(To be continued)",
         image: "images/8.png",
-        left: { label: "↻ 返回開頭測試", next: "start" },
-        right: { label: "↻ 返回開頭測試", next: "start" }
+        left: { label: "↻ Return to the start (test)", next: "start" },
+        right: { label: "↻ Return to the start (test)", next: "start" }
     }
 };
-
-
-    /* =================================
-   5. 多階段對話流程
-================================= */
-function renderDialogueFlow(data) {
-    const flow = data.dialogueFlow;
-    if (!flow) return;
-
-    preloadDialogueSpeakerImages(flow);
-
-    currentDialogueIndex = 0;
-    currentDialogueFlow = {
-        data,
-        flow,
-        card: null,
-        mode: "reading",
-        steps: [],
-        stepIndex: 0,
-        segments: [],
-        segmentIndex: 0,
-        heading: "",
-        onComplete: null,
-        topicIndex: 0,
-        choices: null
-    };
-
-    isAnimating = false;
-    awakeStage = 0;
-
-    const card = document.createElement("div");
-    card.className = "story-card";
-    card.innerHTML = `
-        <div class="card-image dialogue-image">
-            <div class="dialogue-portrait"></div>
-            <span>[ 對話角色圖像預留區 ]</span>
-        </div>
-        <div class="card-content">
-            <h2></h2>
-            <p></p>
-        </div>
-        <div class="swipe-hint hint-left"></div>
-        <div class="swipe-hint hint-right"></div>
-    `;
-
-    currentDialogueFlow.card = card;
-    viewport.appendChild(card);
-    bindDialogPressFeedback(card);
-
-    card.addEventListener("click", () => {
-        const session = currentDialogueFlow;
-        if (!session || session.card !== card || isDragging) return;
-        if (session.mode !== "reading") return;
-
-        if (isAnimating && typingTimer) {
-            finishCurrentDialogueTyping();
-            return;
-        }
-
-        if (isAnimating) return;
-        advanceDialogueSequence();
-    });
-
-    bindCardEvents(card);
-
-    playDialogueSequence(flow.intro, flow.introHeading || "初次接觸", () => {
-        setupTopicChoice(0);
-    });
-}
-
-function playDialogueSequence(steps, heading, onComplete) {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    session.mode = "reading";
-    session.steps = Array.isArray(steps) ? steps : [];
-    session.stepIndex = 0;
-    session.segments = [];
-    session.segmentIndex = 0;
-    session.heading = heading || "對話";
-    session.onComplete = onComplete || null;
-    session.choices = null;
-
-    currentDialogueIndex = 0;
-    awakeStage = 0;
-    isAnimating = false;
-
-    const leftHint = session.card.querySelector(".hint-left");
-    const rightHint = session.card.querySelector(".hint-right");
-    leftHint.textContent = "";
-    rightHint.textContent = "";
-    leftHint.style.opacity = 0;
-    rightHint.style.opacity = 0;
-
-    if (session.steps.length === 0) {
-        finishDialogueSequence();
-        return;
-    }
-
-    renderCurrentDialogueStep();
-}
-
-function stopDialoguePortraitTalk(card) {
-    if (!card) return;
-    const portraitEl = card.querySelector(".dialogue-portrait");
-    if (!portraitEl) return;
-    portraitEl.classList.remove("is-talking", "mouth-open");
-}
-
-function renderCurrentDialogueStep() {
-    const session = currentDialogueFlow;
-    if (!session || !session.card) return;
-
-    const step = session.steps[session.stepIndex];
-    if (!step) return;
-
-    const card = session.card;
-    const imageArea = card.querySelector(".card-image");
-    const portraitEl = imageArea.querySelector(".dialogue-portrait");
-    const spanArea = imageArea.querySelector("span");
-    const titleEl = card.querySelector("h2");
-
-    const imagePath = step.image || DIALOGUE_SPEAKER_IMAGES[step.speaker] || "";
-
-    imageArea.style.transition = "none";
-    imageArea.style.animation = "none";
-    imageArea.classList.remove("full-screen", "blackout", "blurred", "clear");
-    imageArea.dataset.speaker = step.speaker || "";
-
-    portraitEl.classList.remove("is-spritesheet", "is-talking", "mouth-open", "is-idle");
-
-    if (imagePath) {
-        portraitEl.style.display = "block";
-        portraitEl.style.backgroundImage = `url("${imagePath}")`;
-        if (spanArea) spanArea.style.display = "none";
-
-        const cachedImg = cacheDialogueImage(imagePath);
-        const applySpriteFlag = () => {
-            if (cachedImg.naturalWidth > cachedImg.naturalHeight) {
-                portraitEl.classList.add("is-spritesheet");
-            }
-        };
-        if (cachedImg.complete && cachedImg.naturalWidth > 0) {
-            applySpriteFlag();
-        } else {
-            cachedImg.addEventListener("load", applySpriteFlag, { once: true });
-        }
-
-        portraitEl.classList.add("is-idle");
-    } else {
-        portraitEl.style.display = "none";
-        portraitEl.style.backgroundImage = "none";
-        if (spanArea) {
-            spanArea.style.display = "block";
-            spanArea.textContent = step.speaker === "旁白"
-                ? "[ 旁白畫面預留區 ]"
-                : `[ ${step.speaker || "角色"} 特寫圖片預留區 ]`;
-        }
-    }
-
-    titleEl.textContent = session.heading;
-
-    // 將對話內容依 \n 拆成多段字幕，讓玩家點擊卡片逐句切換
-    const rawText = step.text || "";
-    const parsedSegments = rawText
-        .split("\n")
-        .map(seg => seg.trim())
-        .filter(seg => seg.length > 0);
-
-    session.segments = parsedSegments.length > 0 ? parsedSegments : [""];
-    session.segmentIndex = 0;
-
-    typeCurrentDialogueSegment();
-}
-
-function typeCurrentDialogueSegment() {
-    const session = currentDialogueFlow;
-    if (!session || !session.card) return;
-
-    const step = session.steps[session.stepIndex];
-    if (!step) return;
-
-    const card = session.card;
-    const portraitEl = card.querySelector(".dialogue-portrait");
-    const descEl = card.querySelector("p");
-    const imagePath = step.image || DIALOGUE_SPEAKER_IMAGES[step.speaker] || "";
-
-    if (imagePath && portraitEl) {
-        portraitEl.classList.add("is-talking");
-    }
-
-    isAnimating = true;
-
-    const isBeetleMaster = step.speaker === "獨角大仙";
-    const typingSpeed = isBeetleMaster ? 52 : 24;   // 獨角大仙語速放慢
-    const blipInterval = isBeetleMaster ? 1 : 2;   // 獨角大仙逐字發聲，咬字更分明
-
-    const currentSegment = session.segments[session.segmentIndex] || "";
-    const prefix = `${step.speaker}：\n`;
-    const fullMessage = `${prefix}${currentSegment}`;
-
-    typeText(
-        descEl,
-        fullMessage,
-        typingSpeed,
-        () => {
-            isAnimating = false;
-            stopDialoguePortraitTalk(card);
-        },
-        (ch, charIdx) => {
-            if (charIdx < prefix.length) return;
-
-            const spokenIdx = charIdx - prefix.length;
-            if (/[，。！？、…；：「」（）\s]/.test(ch)) {
-                if (portraitEl) portraitEl.classList.remove("mouth-open");
-            } else if (spokenIdx % blipInterval === 0) {
-                if (portraitEl) portraitEl.classList.toggle("mouth-open");
-                playSpeakerBlip(step.speaker);
-            }
-        }
-    );
-}
-
-function finishCurrentDialogueTyping() {
-    const session = currentDialogueFlow;
-    if (!session || session.mode !== "reading" || !typingTimer) return;
-
-    clearInterval(typingTimer);
-    typingTimer = null;
-
-    const step = session.steps[session.stepIndex];
-    const currentSegment = session.segments[session.segmentIndex] || "";
-    session.card.querySelector("h2").textContent = session.heading;
-    const descEl = session.card.querySelector("p");
-    renderFormattedText(descEl, `${step.speaker}：\n${currentSegment}`);
-    descEl.classList.remove("typing-cursor");
-
-    stopDialoguePortraitTalk(session.card);
-    isAnimating = false;
-}
-
-function advanceDialogueSequence() {
-    const session = currentDialogueFlow;
-    if (!session || session.mode !== "reading" || isAnimating) return;
-
-    // 同一句對話裡還有 \n 分隔的下一段時，先切換字幕、保留同一張立繪
-    if (session.segmentIndex < session.segments.length - 1) {
-        session.segmentIndex++;
-        typeCurrentDialogueSegment();
-        return;
-    }
-
-    if (session.stepIndex < session.steps.length - 1) {
-        session.stepIndex++;
-        currentDialogueIndex = session.stepIndex;
-        renderCurrentDialogueStep();
-    } else {
-        finishDialogueSequence();
-    }
-}
-
-function finishDialogueSequence() {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    const callback = session.onComplete;
-    session.onComplete = null;
-    isAnimating = false;
-    awakeStage = 0;
-
-    if (callback) callback();
-}
-
-function finishDialogueTopicsAndGoFinal() {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    playDialogueSequence(
-        session.flow.finalSteps,
-        session.flow.finalHeading || "獨角仙情報",
-        () => {
-            if (session.flow.finalDecision) {
-                setupFinalDecision();
-            } else if (session.flow.nextCard) {
-                currentCardId = session.flow.nextCard;
-                currentDialogueFlow = null;
-                renderCard();
-            }
-        }
-    );
-}
-
-function setupTopicChoice(topicIndex) {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    const topic = session.flow.topics[topicIndex];
-    if (!topic) {
-        finishDialogueTopicsAndGoFinal();
-        return;
-    }
-
-    session.topicIndex = topicIndex;
-    setupDialogueChoice(
-        "topic-choice",
-        topic.title,
-        topic.prompt || "你想向三隻蟑螂詢問哪件事？",
-        topic.left,
-        topic.right
-    );
-}
-
-function setupFinalDecision() {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    const decision = session.flow.finalDecision;
-    setupDialogueChoice(
-        "final-choice",
-        decision.title,
-        decision.description,
-        decision.left,
-        decision.right
-    );
-}
-
-function setupDialogueChoice(mode, title, description, leftChoice, rightChoice) {
-    const session = currentDialogueFlow;
-    if (!session) return;
-
-    session.mode = mode;
-    session.choices = {
-        left: leftChoice,
-        right: rightChoice
-    };
-
-    isAnimating = false;
-    awakeStage = 2;
-
-    const card = session.card;
-    card.querySelector("h2").textContent = title || "做出選擇";
-    card.querySelector("p").textContent = description || "請選擇接下來的行動。";
-
-    const imageArea = card.querySelector(".card-image");
-    const portraitEl = imageArea.querySelector(".dialogue-portrait");
-    if (portraitEl) {
-        portraitEl.style.display = "none";
-        portraitEl.style.backgroundImage = "none";
-        portraitEl.classList.remove("is-talking", "is-idle", "mouth-open", "is-spritesheet");
-    }
-
-    const spanArea = imageArea.querySelector("span");
-    if (spanArea) {
-        spanArea.style.display = "block";
-        spanArea.textContent = "[ 左右滑動做出選擇 ]";
-    }
-
-    const leftHint = card.querySelector(".hint-left");
-    const rightHint = card.querySelector(".hint-right");
-    leftHint.textContent = leftChoice ? `← ${leftChoice.label}` : "";
-    rightHint.textContent = rightChoice ? `${rightChoice.label} →` : "";
-    leftHint.style.opacity = 0;
-    rightHint.style.opacity = 0;
-}
-
-function animateDialogueCard(direction, onComplete) {
-    const session = currentDialogueFlow;
-    if (!session || !session.card) return;
-
-    isAnimating = true;
-    awakeStage = 0;
-
-    const card = session.card;
-    const exitDirection = direction === "left" ? -1 : 1;
-    const exitX = window.innerWidth + card.offsetWidth;
-
-    card.style.transition = "transform 0.4s cubic-bezier(0.4, 0, 1, 1)";
-    card.style.transform = `translate3d(${exitX * exitDirection}px, 0, 0) rotate(${exitDirection * 25}deg)`;
-    
-    animationTimer = setTimeout(() => {
-        card.style.transition = "none";
-        card.style.transform = "translate3d(0, 0, 0) rotate(0deg)";
-        card.querySelector(".hint-left").style.opacity = 0;
-        card.querySelector(".hint-right").style.opacity = 0;
-        currentX = 0;
-        card.offsetHeight;
-        card.style.transition = "";
-
-        if (onComplete) onComplete();
-    }, 400);
-}
-
-function handleDialogueFlowChoice(direction) {
-    const session = currentDialogueFlow;
-    if (!session || (session.mode !== "topic-choice" && session.mode !== "final-choice")) return;
-
-    const choice = session.choices && session.choices[direction];
-    if (!choice) return;
-
-    const selectedMode = session.mode;
-    animateDialogueCard(direction, () => {
-        if (selectedMode === "topic-choice") {
-            const topic = session.flow.topics[session.topicIndex];
-            if (choice.onSelect) choice.onSelect();
-
-            const proceedToNextTopic = () => {
-                const nextTopicIndex = session.topicIndex + 1;
-                if (nextTopicIndex < session.flow.topics.length) {
-                    setupTopicChoice(nextTopicIndex);
-                } else {
-                    finishDialogueTopicsAndGoFinal();
-                }
-            };
-
-            playDialogueSequence(choice.steps, topic.title, () => {
-                if (Array.isArray(topic.afterSteps) && topic.afterSteps.length > 0) {
-                    playDialogueSequence(
-                        topic.afterSteps,
-                        topic.afterHeading || topic.title,
-                        proceedToNextTopic
-                    );
-                } else {
-                    proceedToNextTopic();
-                }
-            });
-            return;
-        }
-
-        playDialogueSequence(
-            choice.steps,
-            direction === "left" ? "前往書房" : "留下來與三隻蟑螂一起玩",
-            () => {
-                currentCardId = choice.next;
-                currentDialogueFlow = null;
-                renderCard();
-            }
-        );
-    });
-}

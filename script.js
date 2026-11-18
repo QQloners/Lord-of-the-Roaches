@@ -51,11 +51,11 @@ let currentDialogueFlow = null;
 
 // 對話角色特寫圖預設對照（中英並存）
 const DIALOGUE_SPEAKER_IMAGES = {
-    "主角": "images/4.png",
+    "你": "images/4.png",
     "蟑螂 A": "images/6.png",
     "蟑螂 B": "images/5.png",
     "蟑螂 C": "images/7.png",
-    "Protagonist": "images/4.png",
+    "You": "images/4.png",
     "Roach A": "images/6.png",
     "Roach B": "images/5.png",
     "Roach C": "images/7.png"
@@ -63,11 +63,11 @@ const DIALOGUE_SPEAKER_IMAGES = {
 
 // 各角色說話音效基礎音高（Hz）
 const SPEAKER_VOICE_PITCH = {
-    "主角": 135,
+    "你": 135,
     "蟑螂 A": 195,
     "蟑螂 B": 165,
     "蟑螂 C": 240,
-    "Protagonist": 135,
+    "You": 135,
     "Roach A": 195,
     "Roach B": 165,
     "Roach C": 240
@@ -123,8 +123,8 @@ let audioCtx = null;
 
 const SPEAKER_VOICE_PROFILES = {
     // --- 中文稱謂 ---
-    "主角": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
-    "主角（小聲碎念）": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
+    "你": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
+    "你（小聲碎念）": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
     "蟑螂 A": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
     "蟑螂 B": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
     "蟑螂 C": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
@@ -140,15 +140,15 @@ const SPEAKER_VOICE_PROFILES = {
     },
     "獨角大仙": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 },
 
-    // --- 英文稱謂（需與 dialogue_en.js 的 speaker 完全一致） ---
-    "Protagonist": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
-    "Protagonist (Muttering)": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
+    // --- 英文稱謂 ---
+    "You": { freq: 310, endFreq: 300, type: "triangle", duration: 0.045, gain: 0.09 },
+    "You (Muttering)": { freq: 265, endFreq: 255, type: "triangle", duration: 0.04, gain: 0.06 },
     "Roach A": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
     "Roach B": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
     "Roach C": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
-    "Big Bro": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
-    "Second Bro": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
-    "Little Bro": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
+    "Eldest": { freq: 460, endFreq: 480, type: "square", duration: 0.035, gain: 0.055 },
+    "Second Brother": { freq: 520, endFreq: 545, type: "square", duration: 0.035, gain: 0.055 },
+    "Youngest": { freq: 590, endFreq: 620, type: "square", duration: 0.035, gain: 0.055 },
     "Three Roaches": {
         voices: [
             { freq: 460, endFreq: 490, type: "square", duration: 0.038, gain: 0.032, delay: 0 },
@@ -366,6 +366,53 @@ function bindDialogPressFeedback(card) {
     card.addEventListener("pointerleave", releasePress);
     card.addEventListener("pointercancel", releasePress);
 }
+/* =================================
+   2-3. 自動存檔與讀檔系統（localStorage）
+================================= */
+const SAVE_STORAGE_KEY = "roach_save_data";
+
+function saveGameProgress() {
+    const story = getActiveStory();
+    const data = story ? story[currentCardId] : null;
+    if (!data || data.ending) return;
+
+    const payload = {
+        cardId: currentCardId,
+        secretEndingCondition1: Boolean(secretEndingCondition1),
+        chapter: data.chapter || "",
+        savedAt: Date.now()
+    };
+
+    try {
+        localStorage.setItem(SAVE_STORAGE_KEY, JSON.stringify(payload));
+    } catch (e) {}
+}
+
+function loadGameProgress() {
+    try {
+        const raw = localStorage.getItem(SAVE_STORAGE_KEY);
+        if (!raw) return null;
+
+        const saved = JSON.parse(raw);
+        const story = getActiveStory();
+        if (!saved || !saved.cardId || !story || !story[saved.cardId]) {
+            return null;
+        }
+        // 若存檔指向結局卡則視為已通關，不提供接續
+        if (story[saved.cardId].ending) {
+            return null;
+        }
+        return saved;
+    } catch (e) {
+        return null;
+    }
+}
+
+function clearGameProgress() {
+    try {
+        localStorage.removeItem(SAVE_STORAGE_KEY);
+    } catch (e) {}
+}
 
 /* =================================
    3. 核心卡片渲染 renderCard()
@@ -446,6 +493,7 @@ function renderCard(options = {}) {
     chapterName.textContent = data.chapter || "";
 
     if (data.ending) {
+        clearGameProgress();
         renderEndingFlow(data);
         return;
     }
@@ -457,6 +505,7 @@ function renderCard(options = {}) {
     }
 
     if (data.onEnter) data.onEnter();
+    saveGameProgress();
 
     gameOver.hidden = true;
     awakeStage = 0;
@@ -767,7 +816,7 @@ function renderStartCard(data) {
 
             setTimeout(() => {
                 typeText(titleEl, data.title || "", 45, () => {
-                    playStartLine(1, "主角", false);
+                    playStartLine(1, "你", false);
                 });
             }, 850);
             return;
@@ -1243,6 +1292,7 @@ function restartGame() {
     currentCardId = "start";
     secretEndingCondition1 = false;
     lastMajorChapter = null;
+    clearGameProgress();
     renderCard();
 }
 
@@ -1267,6 +1317,7 @@ const UI_TEXT = {
         languageLabel: "🌐 語言",
         backToMenu: "返回選單",
         wakeHint: "（醒來）",
+        resumeTip: "接續進度：",
         tearHint: "✂️ 向下滑動撕下卡片"
     },
     en: {
@@ -1284,6 +1335,7 @@ const UI_TEXT = {
         languageLabel: "🌐 Language",
         backToMenu: "Back to Menu",
         wakeHint: "(Wake up)",
+        resumeTip: "Resume: ",
         tearHint: "✂️ Swipe down to tear card"
     }
 };
@@ -1396,17 +1448,27 @@ function renderTitleMenu() {
 
 function showMainMenuFace(card) {
     const langClass = currentLanguage === "en" ? "lang-en" : "";
+    const savedData = loadGameProgress();
+    const hasSave = Boolean(savedData);
+
+    const getSavedChapterText = (saveObj) => {
+        if (!saveObj) return "";
+        const savedCard = getActiveStory()[saveObj.cardId];
+        const chapterLabel = (savedCard && savedCard.chapter) || saveObj.chapter || "";
+        return chapterLabel ? `${getText("resumeTip")}${chapterLabel}` : "";
+    };
 
     card.innerHTML = `
         <div class="title-menu-face ${langClass}">
             <div class="title-menu-list">
-                <button type="button" class="menu-btn is-active" id="btn-menu-start">
+                <button type="button" class="menu-btn ${hasSave ? "" : "is-active"}" id="btn-menu-start">
                     <span class="btn-crown">♛</span>
                     <span class="btn-icon">▶</span>
                     <span>${getText("startGame")}</span>
                 </button>
 
-                <button type="button" class="menu-btn is-locked" id="btn-menu-continue">
+                <button type="button" class="menu-btn ${hasSave ? "is-active" : "is-locked"}" id="btn-menu-continue">
+                    <span class="btn-crown">♛</span>
                     <span class="btn-icon">🕒</span>
                     <span>${getText("continueGame")}</span>
                 </button>
@@ -1417,7 +1479,7 @@ function showMainMenuFace(card) {
                     <span>${getText("settings")}</span>
                 </button>
             </div>
-            <div class="title-menu-footer" id="title-menu-tip"></div>
+            <div class="title-menu-footer" id="title-menu-tip">${hasSave ? getSavedChapterText(savedData) : ""}</div>
         </div>
     `;
 
@@ -1426,15 +1488,24 @@ function showMainMenuFace(card) {
     const settingsBtn = card.querySelector("#btn-menu-settings");
     const tipEl = card.querySelector("#title-menu-tip");
 
-    [startBtn, settingsBtn].forEach(btn => {
+    const interactiveBtns = hasSave
+        ? [startBtn, continueBtn, settingsBtn]
+        : [startBtn, settingsBtn];
+
+    interactiveBtns.forEach(btn => {
         btn.addEventListener("mouseenter", () => {
-            startBtn.classList.remove("is-active");
-            settingsBtn.classList.remove("is-active");
+            interactiveBtns.forEach(b => b.classList.remove("is-active"));
             btn.classList.add("is-active");
+
+            if (btn === continueBtn && savedData) {
+                tipEl.textContent = getSavedChapterText(savedData);
+            } else {
+                tipEl.textContent = "";
+            }
         });
     });
 
-    // 1. 開始遊戲 -> 轉為卡背後進入第一章開頭洗牌與翻牌
+    // 1. 開始遊戲 -> 開啟新局（清除舊存檔）並進入第一章開頭洗牌與翻牌
     startBtn.addEventListener("click", () => {
         if (isAnimating) return;
         isAnimating = true;
@@ -1448,16 +1519,40 @@ function showMainMenuFace(card) {
 
         setTimeout(() => {
             currentCardId = "start";
+            secretEndingCondition1 = false;
+            lastMajorChapter = null;
+            clearGameProgress();
             renderCard();
         }, 320);
     });
 
-    // 2. 繼續遊戲 -> 鎖定搖晃提示
+    // 2. 繼續遊戲 -> 讀取存檔並以洗牌過場接續該卡片
     continueBtn.addEventListener("click", () => {
-        continueBtn.classList.remove("shake-deny");
-        void continueBtn.offsetWidth;
-        continueBtn.classList.add("shake-deny");
-        tipEl.textContent = getText("noSaveTip");
+        const latestSave = loadGameProgress();
+        if (!latestSave) {
+            continueBtn.classList.remove("shake-deny");
+            void continueBtn.offsetWidth;
+            continueBtn.classList.add("shake-deny");
+            tipEl.textContent = getText("noSaveTip");
+            return;
+        }
+
+        if (isAnimating) return;
+        isAnimating = true;
+        if (typeof playCardSound === "function") playCardSound("swipe");
+
+        card.classList.add("is-spin-out");
+
+        setTimeout(() => {
+            card.innerHTML = getCardBackHTML();
+        }, 160);
+
+        setTimeout(() => {
+            currentCardId = latestSave.cardId;
+            secretEndingCondition1 = Boolean(latestSave.secretEndingCondition1);
+            lastMajorChapter = null;
+            renderCard();
+        }, 320);
     });
 
     // 3. 設定 -> 切換至設定面板

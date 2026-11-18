@@ -26,7 +26,7 @@ const STORY_DATA_EN = {
     dining_room: {
         chapter: "Chapter 1: The Ootheca",
         title: "Nobody Home",
-        description: "You muster your courage and open the door.\nBut all that greets you is an empty hallway.\nStill, you can hear a rustling sound coming from the living room...\nFollowing the noise, you drag your body step by step toward the dining table...\n\nPeering through the shadows, you spot three cockroaches huddled together beneath the table, muttering softly about something.",
+        description: "You muster your courage and open the door.\nBut all that greets you is an empty hallway.\nStill, you can hear a rustling sound coming from the living room...\nFollowing the noise, you drag your body step by step toward the dining table...\n\nPeering through the shadows, you spot three cockroaches huddled together beneath the table, \nmuttering softly about something.",
         image: "images/2.png",
         left: { label: "👂 Hide and eavesdrop", next: "eavesdrop" },
         right: { label: "💬 Step forward and talk to them", next: "talk_to_bugs" }

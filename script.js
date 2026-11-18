@@ -158,16 +158,17 @@ const SPEAKER_VOICE_PROFILES = {
     },
     "Master Rhinoceros": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 }
 };
-// 讀取已儲存的字幕音效音量（0.0 ~ 1.0，預設 1.0 = 100%）
-let textSoundVolume = (() => {
+// 讀取已儲存的字幕音效開關（1 = 開，0 = 關，預設開啟）
+window.textSoundVolume = (() => {
     const saved = localStorage.getItem("roach_text_vol");
     if (saved === null) return 1;
     const parsed = parseFloat(saved);
-    return Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : 1;
+    return Number.isFinite(parsed) && parsed <= 0 ? 0 : 1;
 })();
 
 function playSpeakerBlip(speaker) {
-    if (!speaker || speaker === "旁白") return;
+    if (!speaker || speaker === "旁白" || speaker === "Narrator") return;
+    if (Number(window.textSoundVolume) <= 0) return;
 
     const profile = SPEAKER_VOICE_PROFILES[speaker];
     if (!profile) return;
@@ -186,13 +187,14 @@ function playSpeakerBlip(speaker) {
             const startTime = now + (v.delay || 0);
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
+            const peakGain = Math.min(0.45, Math.max(0.001, v.gain * 1.4));
 
             osc.type = v.type;
             osc.frequency.setValueAtTime(v.freq, startTime);
             osc.frequency.exponentialRampToValueAtTime(v.endFreq, startTime + v.duration);
 
             gainNode.gain.setValueAtTime(0.001, startTime);
-            gainNode.gain.linearRampToValueAtTime(v.gain, startTime + 0.005);
+            gainNode.gain.linearRampToValueAtTime(peakGain, startTime + 0.005);
             gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + v.duration);
 
             osc.connect(gainNode);
@@ -1318,6 +1320,8 @@ const UI_TEXT = {
         noSaveTip: "尚無存檔紀錄",
         settingsHeader: "— 遊戲設定 —",
         textSound: "🔊 字幕聲音",
+        soundOn: "開",
+        soundOff: "關",
         textSoundStatus: "",
         bgm: "🎵 背景音樂",
         bgmStatus: "",
@@ -1336,6 +1340,8 @@ const UI_TEXT = {
         noSaveTip: "No save data found",
         settingsHeader: "— SETTINGS —",
         textSound: "🔊 Text Sound",
+        soundOn: "ON",
+        soundOff: "OFF",
         textSoundStatus: "",
         bgm: "🎵 Music",
         bgmStatus: "",
@@ -1571,7 +1577,7 @@ function showMainMenuFace(card) {
 
 function showSettingsPlaceholderFace(card) {
     const langClass = currentLanguage === "en" ? "lang-en" : "";
-    const initialVolPercent = Math.round(textSoundVolume * 100);
+    const isSoundOn = Number(window.textSoundVolume) > 0;
 
     card.innerHTML = `
         <div class="title-menu-face ${langClass}">
@@ -1580,19 +1586,9 @@ function showSettingsPlaceholderFace(card) {
             <div class="settings-slot-list">
                 <div class="settings-slot-item">
                     <span>${getText("textSound")}</span>
-                    <div class="volume-control-group">
-                        <input
-                            type="range"
-                            class="pixel-volume-slider"
-                            id="slider-text-sound"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="${initialVolPercent}"
-                            style="--vol-pct: ${initialVolPercent}%;"
-                            aria-label="${getText("textSound")}"
-                        >
-                        <span class="volume-value-label" id="label-text-sound-val">${initialVolPercent}%</span>
+                    <div class="lang-toggle-group" role="group" aria-label="${getText("textSound")}">
+                        <button type="button" class="lang-option-btn ${isSoundOn ? "is-selected" : ""}" data-sound="on">${getText("soundOn")}</button>
+                        <button type="button" class="lang-option-btn ${!isSoundOn ? "is-selected" : ""}" data-sound="off">${getText("soundOff")}</button>
                     </div>
                 </div>
                 <div class="settings-slot-item">
@@ -1618,31 +1614,29 @@ function showSettingsPlaceholderFace(card) {
         </div>
     `;
 
-    // 字幕音效音量滑桿互動
-    const volumeSlider = card.querySelector("#slider-text-sound");
-    const volumeLabel = card.querySelector("#label-text-sound-val");
+    // 字幕音效開／關按鈕互動
+    const soundButtons = card.querySelectorAll("[data-sound]");
+    soundButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const turnOn = btn.dataset.sound === "on";
+            window.textSoundVolume = turnOn ? 1 : 0;
 
-    if (volumeSlider && volumeLabel) {
-        volumeSlider.addEventListener("input", () => {
-            const pct = Number(volumeSlider.value);
-            textSoundVolume = pct / 100;
-            volumeSlider.style.setProperty("--vol-pct", `${pct}%`);
-            volumeLabel.textContent = `${pct}%`;
             try {
-                localStorage.setItem("roach_text_vol", String(textSoundVolume));
+                localStorage.setItem("roach_text_vol", String(window.textSoundVolume));
             } catch (e) {}
-        });
 
-        // 放開滑桿時試聽一聲角色說話音效
-        volumeSlider.addEventListener("change", () => {
-            if (textSoundVolume > 0) {
+            soundButtons.forEach((b) => {
+                b.classList.toggle("is-selected", (b.dataset.sound === "on") === turnOn);
+            });
+
+            if (turnOn) {
                 playSpeakerBlip(currentLanguage === "en" ? "You" : "你");
             }
         });
-    }
+    });
 
     // 語言切換按鈕互動：即時更新標題、背景圖並重繪設定面板文字
-    const langButtons = card.querySelectorAll(".lang-option-btn");
+    const langButtons = card.querySelectorAll(".lang-option-btn[data-lang]");
     langButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
             const selectedLang = btn.dataset.lang;

@@ -80,7 +80,7 @@ const STORY_DATA_EN = {
                 { speaker: "You", image: "images/4.png", text: "Well... honestly, I’m not really sure myself" },
                 { speaker: "Roach C", image: "images/7.png", text: "...\nActually, all insects speak the same language...\nThey just have different accents..." },
                 { speaker: "You", image: "images/4.png", text: "Please\nI really need your help..." },
-                { speaker: "Roach A", image: "images/6.png", text: "All right... we’ll do what we can to help\nLet me introduce us first\nI’m the eldest of the three. \nThis is our second brother on the left, and our youngest on the right\nAnd who are you?\nWhy are you so huge?" }
+                { speaker: "Roach A", image: "images/6.png", text: "All right... we’ll do what we can to help\nLet me introduce us first\nI’m the eldest of the three. \nThis is our second brother on the left\nand our youngest on the right\nAnd who are you?\nWhy are you so huge?" }
             ],
 
             topics: [

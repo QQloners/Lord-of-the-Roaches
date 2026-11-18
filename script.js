@@ -1400,7 +1400,7 @@ function showSettingsPlaceholderFace(card) {
                     <span>${getText("languageLabel")}</span>
                     <div class="lang-toggle-group" role="group" aria-label="Language">
                         <button type="button" class="lang-option-btn ${currentLanguage === "zh" ? "is-selected" : ""}" data-lang="zh">中文</button>
-                        <button type="button" class="lang-option-btn ${currentLanguage === "en" ? "is-selected" : ""}" data-lang="en">English</button>
+                        <button type="button" class="lang-option-btn ${currentLanguage === "en" ? "is-selected" : ""}" data-lang="en">EN</button>
                     </div>
                 </div>
             </div>

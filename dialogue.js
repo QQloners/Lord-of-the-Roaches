@@ -78,9 +78,9 @@ const STORY_DATA = {
                 { speaker: "蟑螂 A", image: "images/6.png", text: "當然阿!很少看到這麼大的同類...\n等等...\n這算同類嗎?" },
                 { speaker: "蟑螂 B", image: "images/5.png", text: "語言相通的話就是同類吧?" },
                 { speaker: "主角", image: "images/4.png", text: "這個嘛……其實我也不太清楚" },
-                { speaker: "蟑螂 C", image: "images/7.png", text: "拜託~每隻昆蟲說的話都馬相通...\n只是口音不太相近而已..." },
+                { speaker: "蟑螂 C", image: "images/7.png", text: "...\n其實每隻昆蟲說的話都相通...\n只是口音不太相近而已..." },
                 { speaker: "主角", image: "images/4.png", text: "拜託了\n我真的需要你們的幫忙..." },
-                { speaker: "蟑螂 A", image: "images/6.png", text: "好吧...我們盡量幫你\n先介紹一下\n我是他們大哥，左邊這位是老二，右邊是三弟\n但在這之前請讓我問個問題\n你為什麼這麼大隻?" }
+                { speaker: "蟑螂 A", image: "images/6.png", text: "好吧...我們盡量幫你\n先介紹一下\n我是他們大哥，左邊這位是老二，右邊是三弟\n而你是誰呢？\n為什麼會這麼大隻？" }
             ],
 
             topics: [

@@ -1243,3 +1243,64 @@ html, body {
 .settings-slot-item .lang-option-btn:active {
     transform: scale(0.95);
 }
+/* 字幕音效音量滑桿（融入卡片暗金像素風格） */
+.settings-slot-item .volume-control-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings-slot-item .pixel-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 82px;
+    height: 10px;
+    margin: 0;
+    border-radius: 5px;
+    border: 1.5px solid #5c492a;
+    background: linear-gradient(
+        to right,
+        #7c2129 0%,
+        #a3323c var(--vol-pct, 100%),
+        #140e13 var(--vol-pct, 100%),
+        #140e13 100%
+    );
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+}
+
+.settings-slot-item .pixel-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 16px;
+    border-radius: 3px;
+    background: #f7cf73;
+    border: 1.5px solid #140e13;
+    box-shadow: 0 0 0 1px #9e7f47;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.15s ease;
+}
+
+.settings-slot-item .pixel-volume-slider::-webkit-slider-thumb:hover {
+    background: #fff2d6;
+    transform: scale(1.08);
+}
+
+.settings-slot-item .pixel-volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 16px;
+    border-radius: 3px;
+    background: #f7cf73;
+    border: 1.5px solid #140e13;
+    box-shadow: 0 0 0 1px #9e7f47;
+    cursor: pointer;
+}
+
+.settings-slot-item .volume-value-label {
+    min-width: 36px;
+    text-align: right;
+    font-size: 0.76rem;
+    color: #f3dfb9;
+    letter-spacing: 0.5px;
+}

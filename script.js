@@ -158,6 +158,13 @@ const SPEAKER_VOICE_PROFILES = {
     },
     "Master Rhinoceros": { freq: 145, endFreq: 134, type: "triangle", duration: 0.04, gain: 0.16 }
 };
+// 讀取已儲存的字幕音效音量（0.0 ~ 1.0，預設 1.0 = 100%）
+let textSoundVolume = (() => {
+    const saved = localStorage.getItem("roach_text_vol");
+    if (saved === null) return 1;
+    const parsed = parseFloat(saved);
+    return Number.isFinite(parsed) ? Math.min(1, Math.max(0, parsed)) : 1;
+})();
 
 function playSpeakerBlip(speaker) {
     if (!speaker || speaker === "旁白") return;
@@ -1564,6 +1571,7 @@ function showMainMenuFace(card) {
 
 function showSettingsPlaceholderFace(card) {
     const langClass = currentLanguage === "en" ? "lang-en" : "";
+    const initialVolPercent = Math.round(textSoundVolume * 100);
 
     card.innerHTML = `
         <div class="title-menu-face ${langClass}">
@@ -1572,7 +1580,20 @@ function showSettingsPlaceholderFace(card) {
             <div class="settings-slot-list">
                 <div class="settings-slot-item">
                     <span>${getText("textSound")}</span>
-                    <span class="slot-status">${getText("textSoundStatus")}</span>
+                    <div class="volume-control-group">
+                        <input
+                            type="range"
+                            class="pixel-volume-slider"
+                            id="slider-text-sound"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="${initialVolPercent}"
+                            style="--vol-pct: ${initialVolPercent}%;"
+                            aria-label="${getText("textSound")}"
+                        >
+                        <span class="volume-value-label" id="label-text-sound-val">${initialVolPercent}%</span>
+                    </div>
                 </div>
                 <div class="settings-slot-item">
                     <span>${getText("bgm")}</span>
@@ -1596,6 +1617,29 @@ function showSettingsPlaceholderFace(card) {
             <div class="title-menu-footer"></div>
         </div>
     `;
+
+    // 字幕音效音量滑桿互動
+    const volumeSlider = card.querySelector("#slider-text-sound");
+    const volumeLabel = card.querySelector("#label-text-sound-val");
+
+    if (volumeSlider && volumeLabel) {
+        volumeSlider.addEventListener("input", () => {
+            const pct = Number(volumeSlider.value);
+            textSoundVolume = pct / 100;
+            volumeSlider.style.setProperty("--vol-pct", `${pct}%`);
+            volumeLabel.textContent = `${pct}%`;
+            try {
+                localStorage.setItem("roach_text_vol", String(textSoundVolume));
+            } catch (e) {}
+        });
+
+        // 放開滑桿時試聽一聲角色說話音效
+        volumeSlider.addEventListener("change", () => {
+            if (textSoundVolume > 0) {
+                playSpeakerBlip(currentLanguage === "en" ? "You" : "你");
+            }
+        });
+    }
 
     // 語言切換按鈕互動：即時更新標題、背景圖並重繪設定面板文字
     const langButtons = card.querySelectorAll(".lang-option-btn");
